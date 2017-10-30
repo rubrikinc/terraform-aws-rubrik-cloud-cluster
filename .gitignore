@@ -1,0 +1,12 @@
+.vagrant
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~
+
+# Terraform
+terraform.tfvars
+.terraform/*
+terraform.tfstate*
