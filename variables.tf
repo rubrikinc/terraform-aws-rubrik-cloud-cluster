@@ -6,7 +6,7 @@ variable "aws_region"             { default = "us-east-2" }
 variable "aws_instance_type"      { default = "m4.xlarge" }
 variable "aws_spot_price"         { default = "0.05" }
 variable "cluster_name"           { default = "rubrik-test-cluster" }
-variable "prod_environment"        { default = true }
+variable "prod_environment"       { default = true }
 
 variable "rubrik_v4_0_3" {
   type = "map"
