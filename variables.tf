@@ -1,14 +1,21 @@
+# all the AWS details
 variable "aws_access_key"         {}
 variable "aws_secret_key"         {}
 variable "aws_security_group_id"  {}
 variable "aws_vpc_id"             {}
 variable "aws_subnet_id"          {}
+variable "aws_region"             { default = "us-east-2" }
+variable "aws_instance_type"      { default = "m4.xlarge" } # this should not be changed unless absolutely required
+variable "aws_spot_price"         { default = "0.05" } # only used if 'prod_environment' is false
+# set our DNS and NTP servers
+variable "ntp_servers"            {}
+variable "dns_servers"            {}
+# set the details of the admin account
 variable "admin_email_address"    {}
 variable "admin_password"         {}
-variable "aws_region"             { default = "us-east-2" }
-variable "aws_instance_type"      { default = "m4.xlarge" }
-variable "aws_spot_price"         { default = "0.05" }
+# determine the cluster name
 variable "cluster_name"           { default = "rubrik-test-cluster" }
+# set whether this is production (on-demand instances), or non-prod (spot instances)
 variable "prod_environment"       { default = true }
 
 variable "rubrik_v4_0_3" {
