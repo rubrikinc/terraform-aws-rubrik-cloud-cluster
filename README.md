@@ -123,7 +123,7 @@ Terraform can be downloaded and installed following instructions on the Terrafor
 
 ##### Cloning the configuration from GitHub
 
-The configuration can be cloned from the GitHub repository here, use the ‘git clone https://github.com/rubrik-devops/terraform-cloudcluster’ command:
+The configuration can be cloned from the GitHub repository here, use the `git clone https://github.com/rubrik-devops/terraform-cloudcluster` command:
 
 ```none
 tim@HAL:~$ git clone https://github.com/rubrik-devops/terraform-cloudcluster
@@ -140,7 +140,7 @@ tim@HAL:~$
 
 ##### Initialising the directory
 
-The directory can be initialised for Terraform use by running the ‘terraform init’ command:
+The directory can be initialised for Terraform use by running the `terraform init` command:
 
 ```none
 tim@HAL:~/terraform-cloudcluster$ terraform init
@@ -164,7 +164,9 @@ tim@HAL:~/terraform-cloudcluster$
 ##### Gaining access to the Rubrik Cloud Cluster AMI
 
 Access to the Rubrik Cloud Cluster AMI will need to be granted by Rubrik Support; this can be requested via a normal support ticket.
-Checking the directory contents
+
+##### Checking the directory contents
+
 The directory contents should show as:
 
 ```none
@@ -188,12 +190,13 @@ If any of these files are missing, follow the prerequisites section of the docum
 Run `terraform plan` to get information about what will happen when we apply the configuration; this will test that everything is set up correctly.
 
 ##### Applying
+
 We can now apply the configuration to create the cluster using the `terraform apply` command.
 
 ##### Configuring the Cloud Cluster
 
-The Cloud Cluster can now be configured using the relevant ‘Rubrik Cloud Cluster Setup Guide’ for the version being deployed. This can be done via SSH or through the Web UI; access to the interface will depend on the Security Group applied in the configuration above.
+The Cloud Cluster can now be configured through the Web UI; access to the interface will depend on the Security Group applied in the configuration above.
 
 ##### Destroying
 
-Once the Cloud Cluster is no longer required, it can be destroyed using the ‘terraform destroy’ command, and entering ‘yes’ when prompted. This will also destroy the attached EBS volumes.
+Once the Cloud Cluster is no longer required, it can be destroyed using the `terraform destroy` command, and entering `yes` when prompted. This will also destroy the attached EBS volumes.
