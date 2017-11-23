@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains the Rubrik CloudCluster Terraform provisioning configuration. This can be used to provision and bootstrap a Cloud Cluster in Amazon Web Services either using spot instances (for lab based purposes), or standard instances (for persistent clusters).
+This repository contains the Rubrik CloudCluster Terraform provisioning configuration. This can be used to provision and bootstrap a Cloud Cluster in Amazon Web Services.
 
 Completing the steps detailed below will require that Terraform is installed and in your environment path,  that you are running the instance from a *nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
 
@@ -22,22 +22,18 @@ aws_vpc_id | The VPC ID to provision into | vpc-123456ab
 aws_subnet_id | The ID of the subnet to provision into | subnet-123456ab
 aws_region* | The AWS region code (see here) | us-east-1
 aws_instance_type* | The AWS instance type | m4.xlarge
-aws_spot_price* | The spot price in dollars to bid for an instance (spot instance only) | 0.05
 ntp_servers | The list of NTP servers to use | pool.ntp.org
 dns_servers | The list of DNS servers to use | 8.8.8.8
 admin_email_address | The email address to use for the admin account | administrator@demo.com
 admin_password | The password to use when configuring the admin account | MySecretP@ss123!
 cluster_name* | The name of the cluster - used to tag the created instances | my-rubrik-cluster
-prod_environment* | If ‘true’ then normal on-demand instances will be used, if ‘false’ then spot instances are requested | true
 cluster_size* | Used to determine the number of nodes to deploy in the cluster (default: 8) | 8
 
 NOTE: those marked with an asterisk have a default value set in the ‘variables.tf’ file. These can be overridden using the ‘terraform.tfvars’ file if required.
 
 NOTE: m4.xlarge is the only supported instance size for an AWS Cloud Cluster, and no smaller instance type should be used.
 
-NOTE: tags cannot be applied to spot instances at provisioning, so ‘cluster_name’ is not used when ‘prod_environment’ is set to ‘false’.
-
-NOTE: For DNS and NTP servers, where a list is provided rather than a single server (recommended), the list needs to be wrapped as follows: `"\"8.8.8.8\",\"8.8.4.4\""`. This ensures that it is correctly substituted when running the cluster bootstrap.
+NOTE: For DNS and NTP servers, where a list is provided rather than a single server (recommended), the list needs to be wrapped as follows: `"8.8.8.8\",\"8.8.4.4"`. This ensures that it is correctly substituted when running the cluster bootstrap.
 
 This file should be created and stored in the same folder as the rest of the Terraform configuration, the file should be formatted as shown below:
 
@@ -46,7 +42,6 @@ aws_access_key = "ABCDEF0123456789ABCD"
 aws_secret_key = "134knasdcgkh12ip35ASCFGHJ1354/13245sASDF"
 aws_security_group_id   = "sg-abcdef12"
 aws_vpc_id              = "vpc-abcdef12"
-prod_environment        = false
 dns_servers             = "8.8.8.8\",\"8.8.4.4"
 ntp_servers             = "pool.ntp.org"
 ```
@@ -61,9 +56,7 @@ Variable | Description | Default Value
 --- | --- | ---
 aws_region | The AWS region code (see here) | us-east-1
 instance_type | The AWS instance type | m4.xlarge
-spot_price | The spot price in dollars to bid for an instance (spot instance only) | 0.05
 cluster_name | The name of the cluster - used to tag the created instances | rubrik-test-cluster
-prod_environment | If ‘true’ then normal on-demand instances will be used, if ‘false’ then spot instances are requested | true
 
 Beyond these, it contains the AMI IDs for the Cloud Cluster image as follows:
 
