@@ -53,7 +53,7 @@ ntp_servers             = "pool.ntp.org"
 
 These variables can then be called as expected from the main Terraform configuration.
 
-### # variables.tf
+### variables.tf
 
 The `variables.tf` file declares reusable and default variables. This specifies the following defaults which can be overwritten in `terraform.tfvars` as shown above:
 
