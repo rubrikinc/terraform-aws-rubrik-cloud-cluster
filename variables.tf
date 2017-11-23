@@ -17,6 +17,16 @@ variable "admin_password"         {}
 variable "cluster_name"           { default = "rubrik-test-cluster" }
 # set whether this is production (on-demand instances), or non-prod (spot instances)
 variable "prod_environment"       { default = true }
+variable "cluster_size"           { default = 8 }
+
+variable "rubrik_v4_0_4" {
+  type = "map"
+  default {
+    us-east-1 = "ami-f39e2189"
+    us-east-2 = "ami-3dd4fb58"
+    # add other regions
+  }
+}
 
 variable "rubrik_v4_0_3" {
   type = "map"
