@@ -27,8 +27,9 @@ ntp_servers | The list of NTP servers to use | pool.ntp.org
 dns_servers | The list of DNS servers to use | 8.8.8.8
 admin_email_address | The email address to use for the admin account | administrator@demo.com
 admin_password | The password to use when configuring the admin account | MySecretP@ss123!
-cluster_name* | The name of the cluster - used to tag the created instances| my-rubrik-cluster
+cluster_name* | The name of the cluster - used to tag the created instances | my-rubrik-cluster
 prod_environment* | If ‘true’ then normal on-demand instances will be used, if ‘false’ then spot instances are requested | true
+cluster_size* | Used to determine the number of nodes to deploy in the cluster (default: 8) | 8
 
 NOTE: those marked with an asterisk have a default value set in the ‘variables.tf’ file. These can be overridden using the ‘terraform.tfvars’ file if required.
 
@@ -46,7 +47,7 @@ aws_secret_key = "134knasdcgkh12ip35ASCFGHJ1354/13245sASDF"
 aws_security_group_id   = "sg-abcdef12"
 aws_vpc_id              = "vpc-abcdef12"
 prod_environment        = false
-dns_servers             = "\"8.8.8.8\",\"8.8.4.4\""
+dns_servers             = "8.8.8.8\",\"8.8.4.4"
 ntp_servers             = "pool.ntp.org"
 ```
 
