@@ -60,9 +60,13 @@ data "template_file" "bootstrap_json_normalised" {
   template = "${replace("${data.template_file.bootstrap_json.0.rendered}","\"\n","")}"
 }
 
+locals {
+  bootstrap_ip = "${var.bootstrap_interface == "public" ? aws_instance.rubrik_cluster.0.public_ip : aws_instance.rubrik_cluster.0.private_ip}"
+}
+
 # Call the REST API on our production cluster to build the cluster. We wait 3 minutes for the API to be ready
 resource "null_resource" "bootstrap" {
   provisioner "local-exec" {
-    command = "sleep 180 && curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -k -d '${data.template_file.bootstrap_json_normalised.rendered}' 'https://${aws_instance.rubrik_cluster.0.public_ip}/api/internal/cluster/me/bootstrap'"
+    command = "sleep 180 && curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -k -d '${data.template_file.bootstrap_json_normalised.rendered}' 'https://${local.bootstrap_ip}/api/internal/cluster/me/bootstrap'"
   }
 }

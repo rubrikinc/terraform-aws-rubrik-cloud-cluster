@@ -16,6 +16,7 @@ variable "admin_password"         {}
 variable "cluster_name"           { default = "rubrik-test-cluster" }
 # set whether this is production (on-demand instances), or non-prod (spot instances)
 variable "cluster_size"           { default = 8 }
+variable "bootstrap_interface"    { default = "public" }
 
 variable "rubrik_v4_0_4" {
   type = "map"

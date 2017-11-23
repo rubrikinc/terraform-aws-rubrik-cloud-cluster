@@ -28,6 +28,7 @@ admin_email_address | The email address to use for the admin account | administr
 admin_password | The password to use when configuring the admin account | MySecretP@ss123!
 cluster_name* | The name of the cluster - used to tag the created instances | my-rubrik-cluster
 cluster_size* | Used to determine the number of nodes to deploy in the cluster (default: 8) | 8
+bootstrap_interface* | Choose whether to bootstrap on public or private instance interface (default: public) | private
 
 NOTE: those marked with an asterisk have a default value set in the ‘variables.tf’ file. These can be overridden using the ‘terraform.tfvars’ file if required.
 
@@ -44,6 +45,7 @@ aws_security_group_id   = "sg-abcdef12"
 aws_vpc_id              = "vpc-abcdef12"
 dns_servers             = "8.8.8.8\",\"8.8.4.4"
 ntp_servers             = "pool.ntp.org"
+bootstrap_interface     = "private"
 ```
 
 These variables can then be called as expected from the main Terraform configuration.
