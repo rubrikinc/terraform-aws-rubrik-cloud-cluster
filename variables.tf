@@ -14,7 +14,6 @@ variable "admin_email_address"    {}
 variable "admin_password"         {}
 # determine the cluster name
 variable "cluster_name"           { default = "rubrik-test-cluster" }
-# set whether this is production (on-demand instances), or non-prod (spot instances)
 variable "cluster_size"           { default = 8 }
 variable "bootstrap_interface"    { default = "public" }
 
