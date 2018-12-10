@@ -6,7 +6,6 @@ variable "aws_vpc_id"             {}
 variable "aws_subnet_id"          {}
 variable "aws_region"             { default = "us-east-2" }
 variable "aws_instance_type"      { default = "m4.xlarge" } # this should not be changed unless absolutely required
-variable "aws_spot_price"         { default = "0.05" } # only used if 'prod_environment' is false
 # set our DNS and NTP servers
 variable "ntp_servers"            {}
 variable "dns_servers"            {}
@@ -15,9 +14,8 @@ variable "admin_email_address"    {}
 variable "admin_password"         {}
 # determine the cluster name
 variable "cluster_name"           { default = "rubrik-test-cluster" }
-# set whether this is production (on-demand instances), or non-prod (spot instances)
-variable "prod_environment"       { default = true }
 variable "cluster_size"           { default = 8 }
+variable "bootstrap_interface"    { default = "public" }
 
 variable "rubrik_v4_0_4" {
   type = "map"
