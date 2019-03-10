@@ -1,4 +1,4 @@
-# Rubrik Cloud Cluster Terraform Configuration
+# Use Case: Terraform Provisions Rubrik Cloud Cluster to AWS
 
 This repository contains the Rubrik CloudCluster Terraform provisioning configuration. This can be used to provision and bootstrap a Cloud Cluster in Amazon Web Services.
 
