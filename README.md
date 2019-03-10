@@ -2,8 +2,6 @@
 
 This repository contains the Rubrik CloudCluster Terraform provisioning configuration. This can be used to provision and bootstrap a Cloud Cluster in Amazon Web Services.
 
-Completing the steps detailed below will require that Terraform is installed and in your environment path,  that you are running the instance from a -nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
-
 # :blue_book: Documentation 
 
 Here are some resources to get you started! If you find any challenges from this project are not properly documented or are unclear, please [raise an issue](https://github.com/rubrikinc/rubrik-cloudcluster-deploy-aws/issues/new/choose) and let us know! This is a fun, safe environment - don't worry if you're a GitHub newbie! :heart:
@@ -14,7 +12,9 @@ Here are some resources to get you started! If you find any challenges from this
 
 There are a few services you'll need in order to get this project off the ground:
 
-* Rubrik Provider for Terraform
+* [Rubrik Provider for Terraform]() - 
+* [AWS Provider for Terraform]() - 
+
 
 # :muscle: How You Can Help
 
