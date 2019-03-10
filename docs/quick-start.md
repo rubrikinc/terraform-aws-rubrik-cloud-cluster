@@ -1,4 +1,4 @@
-# Rubrik Cloud Cluster Terraform Configuration
+# Quick Start: Terraform Provisions Rubrik Cloud Cluster to AWS
 
 This repository contains the Rubrik CloudCluster Terraform provisioning configuration. This can be used to provision and bootstrap a Cloud Cluster in Amazon Web Services.
 
@@ -9,7 +9,6 @@ Completing the steps detailed below will require that Terraform is installed and
 #### terraform.tfvars
 
 The `terraform.tfvars` file is used to store parameterised variables for passing into the main payload. This is used in our Terraform configuration to store the following variables:
-
 
 Variable | Description | Example Value
 --- | --- | ---
