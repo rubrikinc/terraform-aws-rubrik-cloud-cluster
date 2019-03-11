@@ -12,9 +12,8 @@ Here are some resources to get you started! If you find any challenges from this
 
 There are a few services you'll need in order to get this project off the ground:
 
-* [Rubrik Provider for Terraform]() - 
-* [AWS Provider for Terraform]() - 
-
+* [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
+* [AWS Provider for Terraform](https://github.com/terraform-providers/terraform-provider-aws) - provides Terraform functions for AWS
 
 # :muscle: How You Can Help
 
