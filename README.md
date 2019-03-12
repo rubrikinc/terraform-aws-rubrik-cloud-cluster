@@ -1,8 +1,6 @@
-# Rubrik Cloud Cluster Terraform Configuration
+# Use Case: Terraform Provisions Rubrik Cloud Cluster to AWS
 
 This repository contains the Rubrik CloudCluster Terraform provisioning configuration. This can be used to provision and bootstrap a Cloud Cluster in Amazon Web Services.
-
-Completing the steps detailed below will require that Terraform is installed and in your environment path,  that you are running the instance from a -nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
 
 # :blue_book: Documentation 
 
@@ -14,7 +12,8 @@ Here are some resources to get you started! If you find any challenges from this
 
 There are a few services you'll need in order to get this project off the ground:
 
-* Rubrik Provider for Terraform
+* [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
+* [AWS Provider for Terraform](https://github.com/terraform-providers/terraform-provider-aws) - provides Terraform functions for AWS
 
 # :muscle: How You Can Help
 
