@@ -1,51 +1,62 @@
-# all the AWS details
-variable "aws_access_key"         {}
-variable "aws_secret_key"         {}
-variable "aws_security_group_id"  {}
-variable "aws_vpc_id"             {}
-variable "aws_subnet_id"          {}
-variable "aws_region"             { default = "us-east-2" }
-variable "aws_instance_type"      { default = "m4.xlarge" } # this should not be changed unless absolutely required
-# set our DNS and NTP servers
-variable "ntp_servers"            {}
-variable "dns_servers"            {}
-# set the details of the admin account
-variable "admin_email_address"    {}
-variable "admin_password"         {}
-# determine the cluster name
-variable "cluster_name"           { default = "rubrik-test-cluster" }
-variable "cluster_size"           { default = 8 }
-variable "bootstrap_interface"    { default = "public" }
-
-variable "rubrik_v4_0_4" {
-  type = "map"
-  default {
-    us-east-1 = "ami-f39e2189"
-    us-east-2 = "ami-3dd4fb58"
-    # add other regions
-  }
+variable "aws_instance_type" {
+  description = ""
+  default     = "m5.xlarge"
 }
 
-variable "rubrik_v4_0_3" {
-  type = "map"
-  default {
-    us-east-2 = "ami-4582a020"
-    # add other regions
-  }
+variable "aws_vpc_security_group_ids" {
+  description = ""
 }
 
-variable "rubrik_v4_0_2" {
-  type = "map"
-  default {
-    us-east-2 = "ami-2c4c6f49"
-    # add other regions
-  }
+variable "aws_subnet_id" {
+  description = ""
 }
 
-variable "rubrik_v3_2_0" {
-  type = "map"
-  default {
-    us-east-2 = "ami-4582a020"
-    # add other regions
-  }
+variable "aws_subnet_gateway" {
+  description = ""
+}
+
+variable "aws_subnet_mask" {
+  description = ""
+}
+
+####
+
+variable "number_of_nodes" {
+  description = ""
+  default     = 4
+}
+
+variable "cluster_disk_size" {
+  description = ""
+  default     = "1024"
+}
+
+variable "cluster_name" {
+  description = ""
+  default     = "rubrik-cloud-cluster"
+}
+
+variable "admin_email" {
+  description = ""
+}
+
+variable admin_password {
+  description = ""
+}
+
+variable "dns_search_domain" {
+  description = ""
+}
+
+variable "dns_name_servers" {
+  description = ""
+}
+
+variable "ntp_servers" {
+  description = ""
+  default     = ["8.8.8.8"]
+}
+
+variable "enable_encryption" {
+  description = ""
 }
