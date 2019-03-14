@@ -15,14 +15,11 @@ locals {
 data "aws_ami" "rubrik_cloud_cluster" {
   most_recent = true
 
-  owners = ["447546863256"]
+  owners = ["447546863256"] # Rubrik
 
   filter {
-    name = "name"
-
-    values = ["rubrik-5-0-0-p1-827"]
-
-    # values = ["rubrik-4-2-1-1405"]
+    name   = "name"
+    values = ["rubrik-*"]
   }
 }
 
