@@ -20,7 +20,6 @@ variable "aws_subnet_mask" {
 }
 
 ####
-
 variable "number_of_nodes" {
   description = ""
   default     = 4
@@ -42,6 +41,7 @@ variable "admin_email" {
 
 variable admin_password {
   description = ""
+  default     = "RubrikGoForward"
 }
 
 variable "dns_search_domain" {
