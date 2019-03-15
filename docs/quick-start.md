@@ -1,114 +1,47 @@
-# Quick Start: Terraform Provisions Rubrik Cloud Cluster to AWS
+# Quick Start: Rubrik AWS Cloud Cluster Deployment Terraform Module
 
 Completing the steps detailed below will require that Terraform is installed and in your environment path, that you are running the instance from a *nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
 
-## Configuration Files
 
-This quick start relies on three configuration files:
 
-* `terraform.tfvars`
-* `variables.tf`
-* `rk_cloudcluster_deploy.tf`
+## Configuration
 
-### `terraform.tfvars`
+In your [Terraform configuration](https://learn.hashicorp.com/terraform/getting-started/build#configuration) (`main.tf`) populate the following and update the variables to your specific environment:
 
-The `terraform.tfvars` file is used to store parameterized variables for passing into the main payload. This is used in our Terraform configuration to store the following variables:
+```hcl
+module "rubrik_aws_cloud_cluster" {
+  source = "github.com/rubrikinc/use-case-terraform-deploy-cloudcluster-aws"
 
-**Variable** | **Description** | **Example Value**
---- | --- | ---
-aws_access_key | The AWS access key part of a keypair | ABCDEF0123456789ABCD
-aws_secret_key | The AWS secret key part of a keypair | 134knasdcgkh12ip35ASCFGHJ1354/13245sASDF
-aws_security_group_id | The security group to apply to the instances | sg-123456ab
-aws_vpc_id | The VPC ID to provision into | vpc-123456ab
-aws_subnet_id | The ID of the subnet to provision into | subnet-123456ab
-aws_region* | The AWS region code (see here) | us-east-1
-aws_instance_type* | The AWS instance type | m4.xlarge
-ntp_servers | The list of NTP servers to use | pool.ntp.org
-dns_servers | The list of DNS servers to use | 8.8.8.8
-admin_email_address | The email address to use for the admin account | administrator@demo.com
-admin_password | The password to use when configuring the admin account | MySecretP@ss123!
-cluster_name* | The name of the cluster - used to tag the created instances | my-rubrik-cluster
-cluster_size* | Used to determine the number of nodes to deploy in the cluster (default: 8) | 8
-bootstrap_interface* | Choose whether to bootstrap on public or private instance interface (default: public) | private
-
-**NOTE:** Those marked with an asterisk have a default value set in the `variables.tf` file. However, these can be overridden using the `terraform.tfvars` file, if required.
-
-**NOTE:** `m4.xlarge` is the only supported instance size for an AWS Cloud Cluster, and no smaller instance type should be used.
-
-**NOTE:** For DNS and NTP servers, where a list is provided rather than a single server (recommended), the list needs to be wrapped as follows: `"8.8.8.8\",\"8.8.4.4"`. This ensures that it is correctly substituted when running the cluster bootstrap.
-
-This file should be created and stored in the same folder as the rest of the Terraform configuration, the file should be formatted as shown below:
-
-```none
-aws_access_key = "ABCDEF0123456789ABCD"
-aws_secret_key = "134knasdcgkh12ip35ASCFGHJ1354/13245sASDF"
-aws_security_group_id   = "sg-abcdef12"
-aws_vpc_id              = "vpc-abcdef12"
-dns_servers             = "8.8.8.8\",\"8.8.4.4"
-ntp_servers             = "pool.ntp.org"
-bootstrap_interface     = "private"
-```
-
-These variables can then be called as expected from the main Terraform configuration.
-
-### `variables.tf`
-
-The `variables.tf` file declares reusable and default variables. This specifies the following defaults which can be overwritten in `terraform.tfvars` as shown above:
-
-**Variable** | **Description** | **Default Value**
---- | --- | ---
-aws_region | The AWS region code (see here) | us-east-1
-instance_type | The AWS instance type | m4.xlarge
-cluster_name | The name of the cluster - used to tag the created instances | rubrik-test-cluster
-
-Beyond these, it contains the AMI IDs for the Cloud Cluster image as follows:
-
-```none
-variable "rubrik_v4_0_3" {
- type = "map"
- default {
-   us-east-2 = "ami-4582a020"
-   # add other regions
- }
-}
-
-variable "rubrik_v4_0_2" {
- type = "map"
- default {
-   us-east-2 = "ami-2c4c6f49"
-   # add other regions
- }
-}
-
-variable "rubrik_v3_2_0" {
- type = "map"
- default {
-   us-east-2 = "ami-4582a020"
-   # add other regions
- }
+  aws_vpc_security_group_ids = ["sg-0fc82928bd323ed3qq"]
+  aws_subnet_id              = "subnet-0278a40b29e52203a"
+  cluster_name               = "rubrik-cloud-cluster"
+  admin_email                = "build@rubrik.com"
+  dns_search_domain          = ["rubrikdemo.com"]
+  dns_name_servers           = ["10.142.9.3"]
 }
 ```
 
-As other regions are added, or minor version AMI IDs change (due to patches), this will need to be maintained with the correct IDs.
+You may also add additional variables, such as `ntp_servers`, to overwrite the default values.
 
-### `rk_cloudcluster_deploy.tf`
+## Inputs
 
-This is the main configuration file for the Cloud Cluster, it contains the following sections:
+The following are the variables accepted by the module.
 
-* Provider block - details the access settings for the AWS account
-* Data block - gathers a list of subnets from the provided VPC ID, this lets us spread the cluster across the subnets
-* Resource block - AWS Instance - builds instances for the nodes in the cluster (only used if ‘prod_environment’ is set to ‘true’)
-* Resource block - AWS Spot Instance - builds spot instances for the nodes in the cluster (only used if ‘prod_environment’ is set to ‘false’)
-* Template block - builds JSON payload for bootstrap of cluster
-* Null resource block - calls the 'curl' command with the payload to bootstrap the cluster
+| Name                        | Description                                                                                                            |  Type  |     Default     | Required |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------|:------:|:---------------:|:--------:|
+| aws_instance_type           | The type of instance to use as the Cloud Cluster nodes.                                                                | string |    m5.xlarge    |    no    |
+| aws_disable_api_termination | If true, enables EC2 Instance Termination Protection                                                                   |  bool  |       true      |    no    |
+| aws_vpc_security_group_ids  | A list of security group IDs to associate with the Cloud Cluster.                                                      |  list  |                 |    yes   |
+| aws_subnet_id               | The VPC Subnet ID to launch the Cloud Cluster in.                                                                      | string |                 |    yes   |
+| number_of_nodes             | The total number of nodes in the Cloud Cluster                                                                         |   int  |        4        |    no    |
+| cluster_disk_size           | The size of each the three data disks in each node.                                                                    | string |       1024      |    no    |
+| cluster_name                | Unique name to assign to the Rubrik cluster. Also used for EC2 instance name tag. For example, rubrik-1, rubrik-2 etc. | string |                 |    yes   |
+| admin_email                 | The Rubrik cluster sends messages for the admin account to this email address.                                         | string |                 |    yes   |
+| admin_password              | Password for the Cloud Cluster admin account.                                                                          | string | RubrikGoForward |    no    |
+| dns_search_domain           | List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified.                |  list  |                 |    yes   |
+| dns_name_servers            | List of the IPv4 addresses of the DNS servers.                                                                         |  list  |                 |    yes   |
+| ntp_servers                 | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                              |  list  |   ["8.8.8.8"]   |          |
 
-The deployment will use v4.0.3 of the AMI as it stands; to change this modify this line in the fil:
-
-```none
-ami = "${var.rubrik_v4_0_3["${var.aws_region}"]}"
-```
-
-Replacing `var.rubrik_v4_0_3` with `var.rubrik_vx.y.z`, where `x.y.z` is in defined in the `variables.tf` file as shown above.
 
 ## Running the Terraform Configuration
 
@@ -116,40 +49,34 @@ This section outlines what is required to run the configuration defined above.
 
 ### Prerequisites
 
-* Terraform
-* 
+* [Terraform](https://www.terraform.io/downloads.html) v0.10.3 or greater
+* [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
 
-### Getting Terraform
-
-Terraform can be downloaded and installed following instructions on the Terraform website; the configuration has been tested with v0.10.8.
-
-### Clone the Configuration from GitHub
-
-The configuration can be cloned from the GitHub repository here, use the `git clone https://github.com/rubrik-devops/terraform-cloudcluster` command:
-
-```none
-user@HAL:~$ git clone https://github.com/rubrik-devops/terraform-cloudcluster
-Cloning into 'terraform-cloudcluster'...
-Username for 'https://github.com': <username>
-Password for 'https://<username>@github.com':
-remote: Counting objects: 9, done.
-remote: Compressing objects: 100% (6/6), done.
-remote: Total 9 (delta 2), reused 9 (delta 2), pack-reused 0
-Unpacking objects: 100% (9/9), done.
-Checking connectivity... done.
-user@HAL:~$
-```
 
 ### Initialize the Directory
 
 The directory can be initialized for Terraform use by running the `terraform init` command:
 
 ```none
-user@HAL:~/terraform-cloudcluster$ terraform init
+Initializing modules...
+- module.rubrik_aws_cloud_cluster
+  Getting source "github.com/rubrikinc/use-case-terraform-deploy-cloudcluster-aws"
 
 Initializing provider plugins...
 - Checking for available provider plugins on https://releases.hashicorp.com...
-- Downloading plugin for provider "aws" (1.1.0)...
+- Downloading plugin for provider "aws" (2.2.0)...
+- Downloading plugin for provider "null" (2.1.0)...
+
+The following providers do not have any version constraints in configuration,
+so the latest version was installed.
+
+To prevent automatic upgrades to new major versions that may contain breaking
+changes, it is recommended to add version = "..." constraints to the
+corresponding provider blocks in configuration, with the constraint strings
+suggested below.
+
+* provider.aws: version = "~> 2.2"
+* provider.null: version = "~> 2.1"
 
 Terraform has been successfully initialized!
 
@@ -160,34 +87,11 @@ should now work.
 If you ever set or change modules or backend configuration for Terraform,
 rerun this command to reinitialize your working directory. If you forget, other
 commands will detect it and remind you to do so if necessary.
-user@HAL:~/terraform-cloudcluster$
 ```
 
 ### Gain Access to the Rubrik Cloud Cluster AMI
 
 Access to the Rubrik Cloud Cluster AMI will need to be granted by Rubrik Support; this can be requested via a normal support ticket.
-
-### Check the directory contents
-
-The directory contents should show as:
-
-```none
-user@HAL:~$ tree
-.
-├── README.md
-├── rk_cloudcluster_deploy.tf
-├── terraform.tfvars
-└── variables.tf
-
-0 directories, 4 files
-user@HAL:~$
-```
-
-If any of these files are missing, follow the prerequisites section of the document again.
-
-## Requesting a Cloud Cluster
-
-This section outlines how to provision, configure, and destroy CloudCluster using Terraform. 
 
 ### Planning
 

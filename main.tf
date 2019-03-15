@@ -43,7 +43,7 @@ resource "aws_instance" "rubrik_cluster" {
   instance_type          = "${var.aws_instance_type}"
   ami                    = "${data.aws_ami.rubrik_cloud_cluster.id}"
   vpc_security_group_ids = "${var.aws_vpc_security_group_ids}"
-  subnet_id              = "${var.subnet_id}"
+  subnet_id              = "${var.aws_subnet_id}"
 
   tags {
     Name = "${element(local.cluster_node_name, count.index)}"

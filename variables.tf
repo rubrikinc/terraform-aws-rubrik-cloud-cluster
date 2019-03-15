@@ -9,6 +9,7 @@ variable "aws_disable_api_termination" {
 }
 
 variable "aws_vpc_security_group_ids" {
+  type        = "list"
   description = "A list of security group IDs to associate with the Cloud Cluster."
 }
 
@@ -16,9 +17,8 @@ variable "aws_subnet_id" {
   description = "The VPC Subnet ID to launch the Cloud Cluster in."
 }
 
-####
 variable "number_of_nodes" {
-  description = "The total number of nodes in the Cloud Cluster"
+  description = "The total number of nodes in the Cloud Cluster."
   default     = 4
 }
 
@@ -42,10 +42,12 @@ variable admin_password {
 }
 
 variable "dns_search_domain" {
+  type        = "list"
   description = "List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified."
 }
 
 variable "dns_name_servers" {
+  type        = "list"
   description = "List of the IPv4 addresses of the DNS servers."
 }
 
