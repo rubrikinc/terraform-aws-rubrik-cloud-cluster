@@ -1,4 +1,4 @@
-# Rubrik AWS Cloud Cluster Terraform Module
+# Rubrik Cloud Cluster AWS Deployment Terraform Module
 
 Terraform module which deployes a new Rubrik Cloud Cluster in AWS.
 
@@ -22,7 +22,6 @@ module "rubrik_aws_cloud_cluster" {
   dns_search_domain          = ["rubrikdemo.com"]
   dns_name_servers           = ["10.142.9.3"]
 }
-
 ```
 
 ### Inputs
