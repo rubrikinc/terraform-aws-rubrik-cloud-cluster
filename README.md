@@ -1,6 +1,6 @@
 # Rubrik Cloud Cluster AWS Deployment Terraform Module
 
-Terraform module which deployes a new Rubrik Cloud Cluster in AWS.
+Terraform module which deploys a new Rubrik Cloud Cluster in AWS.
 
 ## :blue_book: Documentation 
 
