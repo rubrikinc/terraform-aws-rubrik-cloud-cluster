@@ -4,9 +4,9 @@ Terraform module which deploys a new Rubrik Cloud Cluster in AWS.
 
 ## :blue_book: Documentation 
 
-Here are some resources to get you started! If you find any challenges from this project are not properly documented or are unclear, please [raise an issue](https://github.com/rubrikinc/use-case-terraform-module-for-aws-cloud-cluster/issues/new/choose) and let us know! This is a fun, safe environment - don't worry if you're a GitHub newbie! :heart:
+Here are some resources to get you started! If you find any challenges from this project are not properly documented or are unclear, please [raise an issue](https://github.com/rubrikinc/terraform-module-for-aws-cloud-cluster/issues/new/choose) and let us know! This is a fun, safe environment - don't worry if you're a GitHub newbie! :heart:
 
-* [Quick Start Guide](https://github.com/rubrikinc/use-case-terraform-module-for-aws-cloud-cluster/blob/master/docs/quick-start.md)
+* [Quick Start Guide](https://github.com/rubrikinc/terraform-module-for-aws-cloud-cluster/blob/master/docs/quick-start.md)
 
 
 ### Usage
