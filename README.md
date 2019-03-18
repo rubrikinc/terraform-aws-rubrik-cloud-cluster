@@ -1,19 +1,21 @@
-# Rubrik Cloud Cluster AWS Deployment Terraform Module
+# Terraform Module - AWS Cloud Cluster Deployment
 
 Terraform module which deploys a new Rubrik Cloud Cluster in AWS.
 
+
 ## :blue_book: Documentation 
 
-Here are some resources to get you started! If you find any challenges from this project are not properly documented or are unclear, please [raise an issue](https://github.com/rubrikinc/terraform-module-for-aws-cloud-cluster/issues/new/choose) and let us know! This is a fun, safe environment - don't worry if you're a GitHub newbie! :heart:
+Here are some resources to get you started! If you find any challenges from this project are not properly documented or are unclear, please [raise an issue](https://github.com/rubrikinc/terraform-module-aws-rubrik-cloud-cluster/issues/new/choose) and let us know! This is a fun, safe environment - don't worry if you're a GitHub newbie! :heart:
 
-* [Quick Start Guide](https://github.com/rubrikinc/terraform-module-for-aws-cloud-cluster/blob/master/docs/quick-start.md)
+* [Terraform Module Registry](https://registry.terraform.io/modules/rubrikinc/aws-rubrik-cloud-cluster)
+* [Quick Start Guide](https://github.com/rubrikinc/terraform-module-aws-rubrik-cloud-cluster/blob/master/docs/quick-start.md)
 
 
 ### Usage
 
 ```hcl
 module "rubrik_aws_cloud_cluster" {
-  source = "github.com/rubrikinc/use-case-terraform-module-for-aws-cloud-cluster"
+  source  = "rubrikinc/aws-rubrik-cloud-cluster/module"
 
   aws_vpc_security_group_ids = ["sg-0fc82928bd323ed3qq"]
   aws_subnet_id              = "subnet-0278a40b29e52203a"
@@ -23,6 +25,8 @@ module "rubrik_aws_cloud_cluster" {
   dns_name_servers           = ["10.142.9.3"]
 }
 ```
+
+
 
 ### Inputs
 

@@ -2,15 +2,13 @@
 
 Completing the steps detailed below will require that Terraform is installed and in your environment path, that you are running the instance from a *nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
 
-
-
 ## Configuration
 
 In your [Terraform configuration](https://learn.hashicorp.com/terraform/getting-started/build#configuration) (`main.tf`) populate the following and update the variables to your specific environment:
 
 ```hcl
 module "rubrik_aws_cloud_cluster" {
-  source = "github.com/rubrikinc/use-case-terraform-deploy-cloudcluster-aws"
+  source  = "rubrikinc/aws-rubrik-cloud-cluster/module"
 
   aws_vpc_security_group_ids = ["sg-0fc82928bd323ed3qq"]
   aws_subnet_id              = "subnet-0278a40b29e52203a"
@@ -52,7 +50,6 @@ This section outlines what is required to run the configuration defined above.
 * [Terraform](https://www.terraform.io/downloads.html) v0.10.3 or greater
 * [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
 
-
 ### Initialize the Directory
 
 The directory can be initialized for Terraform use by running the `terraform init` command:
@@ -60,7 +57,7 @@ The directory can be initialized for Terraform use by running the `terraform ini
 ```none
 Initializing modules...
 - module.rubrik_aws_cloud_cluster
-  Getting source "github.com/rubrikinc/use-case-terraform-deploy-cloudcluster-aws"
+  Getting source "rubrikinc/aws-rubrik-cloud-cluster/module"
 
 Initializing provider plugins...
 - Checking for available provider plugins on https://releases.hashicorp.com...
