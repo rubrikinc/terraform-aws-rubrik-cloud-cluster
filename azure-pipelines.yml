@@ -9,11 +9,56 @@ trigger:
 pool:
   vmImage: 'Ubuntu-16.04'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+steps:
+
+- task: DownloadGitHubRelease@0
+  displayName: 'Download the Rubrik Terraform Provider'
+  inputs:
+    connection: rubrikbuild
+    userRepository: rubrikinc/rubrik-provider-for-terraform
+    defaultVersionType: 'latest' 
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+- script: mkdir -p ~/.terraform.d/plugins/linux_amd64
+  displayName: Create the Terraform plugin directory
+
+- script: mv '$(System.ArtifactsDirectory)'/terraform-provider-rubrik-linux-amd64 ~/.terraform.d/plugins/linux_amd64/terraform-provider-rubrik
+  displayName: Move the Rubrik Terraform Provider
+
+- script: chmod -R 777 ~/.terraform.d/plugins/linux_amd64/terraform-provider-rubrik
+  displayName: Update the Rubrik Provider Permissions
+
+
+- task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+  displayName: 'terraform init'
+  inputs:
+    command: init
+    workingDirectory: '$(System.DefaultWorkingDirectory)/tests'
+
+# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+#   displayName: 'terraform plan'
+#   inputs:
+#     command: plan
+#     environmentServiceName: 'RubrikField (36b80dec-a6d0-4b8c-ba74-52648aa3caa4)'
+#     workingDirectory: '$(System.DefaultWorkingDirectory)/tests'
+
+
+# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+#   displayName: 'terraform apply'
+#   inputs:
+#     command: apply
+#     environmentServiceName: 'RubrikField (36b80dec-a6d0-4b8c-ba74-52648aa3caa4)'
+#     workingDirectory: '$(System.DefaultWorkingDirectory)/tests'
+#     commandOptions: '-auto-approve'
+
+# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+#   displayName: 'terraform destroy'
+#   inputs:
+#     command: destroy
+#     environmentServiceName: 'RubrikField (36b80dec-a6d0-4b8c-ba74-52648aa3caa4)'
+#     workingDirectory: '$(System.DefaultWorkingDirectory)/tests'
+#     commandOptions: '-auto-approve'
+
+
+
