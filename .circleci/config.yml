@@ -4,13 +4,15 @@
 version: 2
 jobs:
   build:
-    working_directory: /tests
+    working_directory: ~/terraform/tests
+
     docker:
       # specify the version
       - image: rubrikdevops/terraform-provider:1.0.3
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/terraform
 
       # specify any bash command here prefixed with `run: `
       - run:
