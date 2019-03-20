@@ -14,15 +14,18 @@ jobs:
       - checkout:
           path: ~/terraform
 
-      # specify any bash command here prefixed with `run: `
       - run:
-          name: terraform init
+          name: Initialize the Terrafrom working directory
           command: terraform init
 
       - run:
           name: List All Files
           command: ls
 
-      - run: terraform apply -auto-approve
+      - run:
+          name: Deploy the Rubrik Cloud Cluster
+          command: terraform apply -auto-approve
 
-      - run: terraform destroy -auto-approve
+      - run:
+          name: Destroy the Rubrik Cloud Cluster
+          command: terraform destroy -auto-approve
