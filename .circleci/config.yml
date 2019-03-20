@@ -2,12 +2,13 @@
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
+
 jobs:
   build:
     working_directory: ~/tests
     docker:
       # specify the version
-      - image: rubrikdevops/terraform-provider:1.0.3
+      - image: hashicorp/terraform
 
     steps:
       - checkout
@@ -15,12 +16,6 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: terraform init
 
-      - run:
-          shell: /bin/sh
-          command: |
-            terraform apply -auto-approve
+      - run: apply -auto-approve
 
-      - run:
-          shell: /bin/sh
-          command: |
-            terraform destroy -auto-approve
+      - run: destroy -auto-approve
