@@ -7,11 +7,12 @@ jobs:
     working_directory: ~/tests
     docker:
       # specify the version
-      - image: hashicorp/terraform:light
+      - image: rubrikdevops/terraform-provider
 
     steps:
       - checkout
 
       # specify any bash command here prefixed with `run: `
       - run: terraform init
-      # - run: go test -v ./...
+      - run: terraform apply -auto-approve
+      - run: terraform destroy -auto-approve
