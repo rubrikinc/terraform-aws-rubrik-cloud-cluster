@@ -16,13 +16,11 @@ jobs:
       - run: terraform init
 
       - run:
-        shell: /bin/sh
-        command: |
-          terraform apply -auto-approve
+          shell: /bin/sh
+          command: |
+            terraform apply -auto-approve
 
       - run:
-        shell: /bin/sh
-        command: |
-          terraform destroy -auto-approve
-
-#
+          shell: /bin/sh
+          command: |
+            terraform destroy -auto-approve
