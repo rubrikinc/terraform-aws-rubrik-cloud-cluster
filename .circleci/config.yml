@@ -7,7 +7,7 @@ jobs:
     working_directory: ~/tests
     docker:
       # specify the version
-      - image: rubrikdevops/terraform-provider
+      - image: rubrikdevops/terraform-provider:1.0.3
 
     steps:
       - checkout
