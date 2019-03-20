@@ -14,6 +14,15 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: terraform init
-      - run: terraform apply -auto-approve
-      - run: terraform destroy -auto-approve
+
+      - run:
+        shell: /bin/sh
+        command: |
+          terraform apply -auto-approve
+
+      - run:
+        shell: /bin/sh
+        command: |
+          terraform destroy -auto-approve
+
 #
