@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - cd tests
+      - terraform init
+  build:
+    commands:
+      - terraform apply -auto-approve
+    finally:
+      - terraform destroy -auto-approve
