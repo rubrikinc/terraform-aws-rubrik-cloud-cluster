@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - cd tests
-      - terraform init
+      - terraform init -no-color
   build:
     commands:
       - terraform apply -auto-approve -no-color
