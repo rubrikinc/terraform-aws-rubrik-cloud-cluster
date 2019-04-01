@@ -12,7 +12,7 @@ module "rubrik_aws_cloud_cluster" {
   aws_disable_api_termination = false
   aws_vpc_security_group_ids  = "${var.aws_vpc_security_group_ids}"
   aws_subnet_id               = "${var.aws_subnet_id}"
-  cluster_name                = "terraform-module-testing"
+  cluster_name                = "terraform-module-cloud-cluster-testing"
   admin_email                 = "build@rubrik.com"
   dns_search_domain           = ["rubrikbuild.com"]
   dns_name_servers            = ["8.8.8.8"]
