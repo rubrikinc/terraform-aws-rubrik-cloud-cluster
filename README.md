@@ -1,6 +1,6 @@
 # Terraform Module - AWS Cloud Cluster Deployment
 
-![AWS CodeBuild Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiTTBRQ2EwV0U5bk5lWUpjV2E2WVZld05EdVd1Z0dFM25CZ2xnMS90Slh4cURRbFU2dU5NcDh4RmtxQnVaRXk3c01KQVZyOHQ0RHoweDQ0ZTdCYjJuNUxRPSIsIml2UGFyYW1ldGVyU3BlYyI6IjFjUWhPTmdnUkN0VEdDU3giLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+![AWS CodeBuild Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiNzBMVFNxcThTQTlCVlVQN3IxRmNnbHRZZjFaaDdxR2dDWXV3SkY2M3hhZTh5WHVGbzhuVklQZzRQNkppZ1paVlREejFrUmFWV0U4VEduR2N5TzQ1YW04PSIsIml2UGFyYW1ldGVyU3BlYyI6IkZrd3VMRTV0a3c0MXdpY1ciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
 
 Terraform module which deploys a new Rubrik Cloud Cluster in AWS.
