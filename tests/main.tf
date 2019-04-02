@@ -16,4 +16,5 @@ module "rubrik_aws_cloud_cluster" {
   admin_email                 = "build@rubrik.com"
   dns_search_domain           = ["rubrikbuild.com"]
   dns_name_servers            = ["8.8.8.8"]
+  timeout                     = 30
 }

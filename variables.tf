@@ -55,3 +55,8 @@ variable "ntp_servers" {
   description = "List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)"
   default     = ["8.8.8.8"]
 }
+
+variable "timeout" {
+  description = "The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error."
+  default     = 15
+}

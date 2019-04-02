@@ -95,4 +95,5 @@ resource "rubrik_bootstrap" "bootstrap_rubrik" {
   enable_encryption      = false
 
   node_config = "${zipmap(local.cluster_node_name, local.cluster_node_ips)}"
+  timeout     = "${var.cluster_name}"
 }

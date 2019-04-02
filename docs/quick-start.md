@@ -38,7 +38,8 @@ The following are the variables accepted by the module.
 | admin_password              | Password for the Cloud Cluster admin account.                                                                          | string | RubrikGoForward |    no    |
 | dns_search_domain           | List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified.                |  list  |                 |    yes   |
 | dns_name_servers            | List of the IPv4 addresses of the DNS servers.                                                                         |  list  |                 |    yes   |
-| ntp_servers                 | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                              |  list  |   ["8.8.8.8"]   |          |
+| ntp_servers                 | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                              |  list  |   ["8.8.8.8"]   |    no    |
+| timeout                     | The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error.           |   int  |        15       |    no    |
 
 
 ## Running the Terraform Configuration
