@@ -53,7 +53,7 @@ variable "dns_name_servers" {
 
 variable "ntp_servers" {
   description = "List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)"
-  default     = ["8.8.8.8"]
+  default     = ["169.254.169.123"]
 }
 
 variable "timeout" {
