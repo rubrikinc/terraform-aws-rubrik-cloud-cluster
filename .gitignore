@@ -5,8 +5,9 @@
 \#*#
 .*.sw[a-z]
 *.un~
+settings.json
 
 # Terraform
 terraform.tfvars
-.terraform/*
+.terraform*
 terraform.tfstate*
