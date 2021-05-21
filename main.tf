@@ -23,12 +23,22 @@ data "aws_subnet" "rubrik_cloud_cluster" {
   id = "${var.aws_subnet_id}"
 }
 
-  owners = ["447546863256"] # Rubrik
+data "aws_ami_ids" "rubrik_cloud_cluster" {
+  owners = ["679593333241"] 
 
   filter {
     name   = "name"
-    values = ["rubrik-*"]
+    values = ["rubrik-mp-cc-*"]
   }
+}
+
+##############################
+# SSH KEY PAIR FOR INSTANCES #
+##############################
+
+resource "aws_key_pair" "rubrik_cloud_cluster" {
+  key_name   = "${var.cluster_name}-key-pair"
+  public_key = "${var.aws_public_key}"
 }
 
 #########################################
@@ -98,8 +108,10 @@ resource "aws_security_group_rule" "rubrik_cloud_cluster_web_admin" {
 resource "aws_instance" "rubrik_cluster" {
   count                  = "${var.number_of_nodes}"
   instance_type          = "${var.aws_instance_type}"
+  ami                    = "${element(data.aws_ami_ids.rubrik_cloud_cluster.ids, 0)}"
   vpc_security_group_ids = ["${aws_security_group.rubrik_cloud_cluster.id}"]
   subnet_id              = "${var.aws_subnet_id}"
+  key_name               = "${aws_key_pair.rubrik_cloud_cluster.key_name}"
 
   tags = {
     Name = "${element(local.cluster_node_name, count.index)}"
@@ -137,7 +149,7 @@ resource "aws_instance" "rubrik_cluster" {
     volume_type = "${var.cluster_disk_type}"
     volume_size = "${var.cluster_disk_size}"
     encrypted   = true
-}
+  }
 
   ebs_block_device {
     device_name = "/dev/sdf"
@@ -151,5 +163,5 @@ resource "aws_instance" "rubrik_cluster" {
     volume_type = "${var.cluster_disk_type}"
     volume_size = "${var.cluster_disk_size}"
     encrypted   = true
-}
+  }
 }

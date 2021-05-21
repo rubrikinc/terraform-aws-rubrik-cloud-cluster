@@ -22,7 +22,9 @@ variable "aws_vpc_security_group_name_cloud_cluster_hosts" {
 }
 
 variable "aws_subnet_id" {
-  description = "The VPC Subnet ID to launch the Cloud Cluster in."
+variable "aws_public_key" {
+  description = "The public key material needed to create an AWS key pair for use with Rubrik Cloud Cluster."
+  sensitive   = true
 }
 
 variable "number_of_nodes" {
