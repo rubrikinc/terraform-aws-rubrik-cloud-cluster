@@ -107,6 +107,10 @@ resource "aws_instance" "rubrik_cluster" {
 
   disable_api_termination = "${var.aws_disable_api_termination}"
 
+  root_block_device {
+    encrypted = true
+  }
+  
   ebs_block_device {
     device_name = "/dev/sdb"
     volume_type = "st1"
