@@ -113,47 +113,43 @@ resource "aws_instance" "rubrik_cluster" {
   
   ebs_block_device {
     device_name = "/dev/sdb"
-    volume_type = "st1"
+    volume_type = "${var.cluster_disk_type}"
     volume_size = "${var.cluster_disk_size}"
     encrypted   = true
   }
 
   ebs_block_device {
     device_name = "/dev/sdc"
-    volume_type = "st1"
+    volume_type = "${var.cluster_disk_type}"
     volume_size = "${var.cluster_disk_size}"
     encrypted   = true
   }
 
   ebs_block_device {
     device_name = "/dev/sdd"
-    volume_type = "st1"
+    volume_type = "${var.cluster_disk_type}"
     volume_size = "${var.cluster_disk_size}"
     encrypted   = true
   }
+
+  ebs_block_device {
+    device_name = "/dev/sde"
+    volume_type = "${var.cluster_disk_type}"
+    volume_size = "${var.cluster_disk_size}"
+    encrypted   = true
 }
 
-######################################
-# Bootstrap the Rubrik Cloud Cluster #
-######################################
+  ebs_block_device {
+    device_name = "/dev/sdf"
+    volume_type = "${var.cluster_disk_type}"
+    volume_size = "${var.cluster_disk_size}"
+    encrypted   = true
+  }
 
-provider "rubrik" {
-  node_ip  = "${aws_instance.rubrik_cluster.0.private_ip}"
-  username = ""
-  password = ""
+  ebs_block_device {
+    device_name = "/dev/sdg"
+    volume_type = "${var.cluster_disk_type}"
+    volume_size = "${var.cluster_disk_size}"
+    encrypted   = true
 }
-
-resource "rubrik_bootstrap" "bootstrap_rubrik" {
-  cluster_name           = "${var.cluster_name}"
-  admin_email            = "${var.admin_email}"
-  admin_password         = "${var.admin_password}"
-  management_gateway     = "${cidrhost(data.aws_subnet.default_gateway.cidr_block, 1)}"
-  management_subnet_mask = "${cidrnetmask(data.aws_subnet.default_gateway.cidr_block)}"
-  dns_search_domain      = "${var.dns_search_domain}"
-  dns_name_servers       = "${var.dns_name_servers}"
-  ntp_servers            = "${var.ntp_servers}"
-  enable_encryption      = false
-
-  node_config = "${zipmap(local.cluster_node_name, local.cluster_node_ips)}"
-  timeout     = "${var.timeout}"
 }

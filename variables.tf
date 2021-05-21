@@ -2,8 +2,8 @@ variable "aws_region" {
   description = "The region to deploy Rubrik Cloud Cluster nodes."
 }
 variable "aws_instance_type" {
-  description = "The type of instance to use as the Cloud Cluster nodes."
-  default     = "m5.xlarge"
+  description = "The type of instance to use as Rubrik Cloud Cluster nodes."
+  default     = "m5.4xlarge"
 }
 
 variable "aws_disable_api_termination" {
@@ -28,6 +28,11 @@ variable "aws_subnet_id" {
 variable "number_of_nodes" {
   description = "The total number of nodes in the Cloud Cluster."
   default     = 4
+}
+
+variable "cluster_disk_type" {
+  description = "The disk type to use for Rubrik Cloud Cluster data disks (sc1 or st1). NOTE: st1 disks require six 8TB disks."
+  default     = "st1"
 }
 
 variable "cluster_disk_size" {
