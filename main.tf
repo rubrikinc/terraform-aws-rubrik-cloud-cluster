@@ -19,8 +19,9 @@ locals {
   cluster_node_ips = "${aws_instance.rubrik_cluster.*.private_ip}"
 }
 
-data "aws_ami" "rubrik_cloud_cluster" {
-  most_recent = true
+data "aws_subnet" "rubrik_cloud_cluster" {
+  id = "${var.aws_subnet_id}"
+}
 
   owners = ["447546863256"] # Rubrik
 
@@ -30,8 +31,64 @@ data "aws_ami" "rubrik_cloud_cluster" {
   }
 }
 
-data "aws_subnet" "default_gateway" {
-  id = "${var.aws_subnet_id}"
+#########################################
+# Security Group for the Rubrik Cluster #
+#########################################
+
+resource "aws_security_group" "rubrik_cloud_cluster" {
+  name        = "${var.aws_vpc_security_group_name_cloud_cluster_nodes}"
+  description = "Allow hosts to talk to Rubrik Cloud Cluster"
+  vpc_id      = "${data.aws_subnet.rubrik_cloud_cluster.vpc_id}"
+
+  ingress {
+    description      = "Intra cluster communication"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    self             = true
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_security_group" "rubrik_hosts" {
+  name        = "${var.aws_vpc_security_group_name_cloud_cluster_hosts}"
+  description = "Allow Rubrik Cloud Cluster to communicate with hosts"
+  vpc_id      = "${data.aws_subnet.rubrik_cloud_cluster.vpc_id}"
+
+  ingress {
+    description      = "Ports for Rubrik Backup Service (RBS)"
+    from_port        = 12800
+    to_port          = 12801
+    protocol         = "tcp"
+    security_groups  = ["${aws_security_group.rubrik_cloud_cluster.id}"]
+  }
+}
+
+resource "aws_security_group_rule" "rubrik_cloud_cluster_cli_admin" {
+  type              = "ingress"
+  description       = "CLI administration of the nodes"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  security_group_id = "${aws_security_group.rubrik_cloud_cluster.id}"
+  source_security_group_id = "${aws_security_group.rubrik_hosts.id}"
+}
+
+resource "aws_security_group_rule" "rubrik_cloud_cluster_web_admin" {
+  type              = "ingress"
+  description       = "Web administration of the nodes"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  security_group_id = "${aws_security_group.rubrik_cloud_cluster.id}"
+  source_security_group_id = "${aws_security_group.rubrik_hosts.id}"
 }
 
 ###############################
@@ -41,8 +98,7 @@ data "aws_subnet" "default_gateway" {
 resource "aws_instance" "rubrik_cluster" {
   count                  = "${var.number_of_nodes}"
   instance_type          = "${var.aws_instance_type}"
-  ami                    = "${data.aws_ami.rubrik_cloud_cluster.id}"
-  vpc_security_group_ids = ["${var.aws_vpc_security_group_ids}"]
+  vpc_security_group_ids = ["${aws_security_group.rubrik_cloud_cluster.id}"]
   subnet_id              = "${var.aws_subnet_id}"
 
   tags = {

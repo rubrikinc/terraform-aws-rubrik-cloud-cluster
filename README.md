@@ -29,6 +29,8 @@ module "rubrik_aws_cloud_cluster" {
 ### Inputs
 
 | aws_region                                      | The region to deploy Rubrik Cloud Cluster nodes.                                                                         | string |                            |   yes    |
+| aws_vpc_security_group_name_cloud_cluster_nodes | The name of the security group to create for Rubrik Cloud Cluster to use.                                                | string |    Rubrik Cloud Cluster    |   yes    |
+| aws_vpc_security_group_name_cloud_cluster_hosts | The name of the security group to create for Rubrik Cloud Cluster to communicate with EC2 instances.                     | string | Rubrik Cloud Cluster Hosts |   yes    |
 
 ## Prerequisites
 

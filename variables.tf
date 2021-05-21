@@ -11,9 +11,14 @@ variable "aws_disable_api_termination" {
   default     = true
 }
 
-variable "aws_vpc_security_group_ids" {
-  type        = "list"
-  description = "A list of security group IDs to associate with the Cloud Cluster."
+variable "aws_vpc_security_group_name_cloud_cluster_nodes" {
+  description = "The name of the security group to create for Rubrik Cloud Cluster to use."
+  default     = "Rubrik Cloud Cluster"
+}
+
+variable "aws_vpc_security_group_name_cloud_cluster_hosts" {
+  description = "The name of the security group to create for Rubrik Cloud Cluster to communicate with EC2 instances."
+  default     = "Rubrik Cloud Cluster Hosts"
 }
 
 variable "aws_subnet_id" {
