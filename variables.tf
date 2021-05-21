@@ -1,3 +1,6 @@
+variable "aws_region" {
+  description = "The region to deploy Rubrik Cloud Cluster nodes."
+}
 variable "aws_instance_type" {
   description = "The type of instance to use as the Cloud Cluster nodes."
   default     = "m5.xlarge"
