@@ -55,12 +55,12 @@ variable admin_password {
 }
 
 variable "dns_search_domain" {
-  type        = "list"
+  type        = list
   description = "List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified."
 }
 
 variable "dns_name_servers" {
-  type        = "list"
+  type        = list
   description = "List of the IPv4 addresses of the DNS servers."
 }
 
