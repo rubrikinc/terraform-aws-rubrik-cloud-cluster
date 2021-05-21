@@ -8,7 +8,7 @@ provider "aws" {
 resource "null_resource" "create_cluster_node_name" {
   count = "${var.number_of_nodes}"
 
-  triggers {
+  triggers = {
     node_number = "${count.index + 1}"
   }
 }
@@ -45,7 +45,7 @@ resource "aws_instance" "rubrik_cluster" {
   vpc_security_group_ids = ["${var.aws_vpc_security_group_ids}"]
   subnet_id              = "${var.aws_subnet_id}"
 
-  tags {
+  tags = {
     Name = "${element(local.cluster_node_name, count.index)}"
   }
 

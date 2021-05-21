@@ -34,8 +34,9 @@ module "rubrik_aws_cloud_cluster" {
 
 There are a few services you'll need in order to get this project off the ground:
 
-* [Terraform](https://www.terraform.io/downloads.html) v0.10.3 or greater
-* [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
+- [Terraform](https://www.terraform.io/downloads.html) v0.15.4 or greater
+- [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
+  - Only required to run the sample Rubrik Bootstrap command
 
 ## How You Can Help
 
