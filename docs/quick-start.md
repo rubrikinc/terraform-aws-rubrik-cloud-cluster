@@ -1,6 +1,6 @@
 # Quick Start: Rubrik AWS Cloud Cluster Deployment Terraform Module
 
-Completing the steps detailed below will require that Terraform is installed and in your environment path, that you are running the instance from a *nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
+Completing the steps detailed below will require that Terraform is installed and in your environment path, that you are running the instance from a \*nix shell (bash, zsh, etc), and that your machine is allowed HTTPS access through the AWS Security Group, and any Network ACLs, into the instances provisioned.
 
 ## Configuration
 
@@ -25,31 +25,35 @@ You may also add additional variables, such as `ntp_servers`, to overwrite the d
 
 The following are the variables accepted by the module.
 
-| Name                        | Description                                                                                                            |  Type  |     Default     | Required |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------|:------:|:---------------:|:--------:|
-| aws_instance_type           | The type of instance to use as the Cloud Cluster nodes.                                                                | string |    m5.xlarge    |    no    |
-| aws_disable_api_termination | If true, enables EC2 Instance Termination Protection                                                                   |  bool  |       true      |    no    |
-| aws_vpc_security_group_ids  | A list of security group IDs to associate with the Cloud Cluster.                                                      |  list  |                 |    yes   |
-| aws_subnet_id               | The VPC Subnet ID to launch the Cloud Cluster in.                                                                      | string |                 |    yes   |
-| number_of_nodes             | The total number of nodes in the Cloud Cluster                                                                         |   int  |        4        |    no    |
-| cluster_disk_size           | The size of each the three data disks in each node.                                                                    | string |       1024      |    no    |
-| cluster_name                | Unique name to assign to the Rubrik cluster. Also used for EC2 instance name tag. For example, rubrik-1, rubrik-2 etc. | string |                 |    yes   |
-| admin_email                 | The Rubrik cluster sends messages for the admin account to this email address.                                         | string |                 |    yes   |
-| admin_password              | Password for the Cloud Cluster admin account.                                                                          | string | RubrikGoForward |    no    |
-| dns_search_domain           | List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified.                |  list  |                 |    yes   |
-| dns_name_servers            | List of the IPv4 addresses of the DNS servers.                                                                         |  list  |                 |    yes   |
-| ntp_servers                 | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                              |  list  |   ["8.8.8.8"]   |    no    |
-| timeout                     | The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error.           |   int  |        15       |    no    |
-
+| Name                                            | Description                                                                                                              |  Type  |          Default           | Required |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | :----: | :------------------------: | :------: |
+| aws_region                                      | The region to deploy Rubrik Cloud Cluster nodes.                                                                         | string |                            |   yes    |
+| aws_instance_type                               | The type of instance to use as Rubrik Cloud Cluster nodes.                                                               | string |         m5.xlarge          |    no    |
+| aws_disable_api_termination                     | If true, enables EC2 Instance Termination Protection                                                                     |  bool  |            true            |    no    |
+| aws_vpc_security_group_name_cloud_cluster_nodes | The name of the security group to create for Rubrik Cloud Cluster to use.                                                | string |    Rubrik Cloud Cluster    |   yes    |
+| aws_vpc_security_group_name_cloud_cluster_hosts | The name of the security group to create for Rubrik Cloud Cluster to communicate with EC2 instances.                     | string | Rubrik Cloud Cluster Hosts |   yes    |
+| aws_subnet_id                                   | The VPC Subnet ID to launch Rubrik Cloud Cluster in.                                                                     | string |                            |   yes    |
+| aws_public_key                                  | he public key material needed to create an AWS key pair for use with Rubrik Cloud Cluster.                               | string |                            |   yes    |
+| number_of_nodes                                 | The total number of nodes in Rubrik Cloud Cluster.                                                                       |  int   |             4              |    no    |
+| cluster_disk_type                               | The disk type to use for Rubrik Cloud Cluster data disks (sc1 or st1). NOTE: st1 disks require six 8TB disks.            | string |            st1             |   yes    |
+| cluster_disk_size                               | The size of each the three data disks in each node.                                                                      | string |            1024            |    no    |
+| cluster_name                                    | Unique name to assign to Rubrik Cloud Cluster. Also used for EC2 instance name tag. For example, rubrik-1, rubrik-2 etc. | string |                            |   yes    |
+| admin_email                                     | The Rubrik Cloud Cluster sends messages for the admin account to this email address.                                     | string |                            |   yes    |
+| admin_password                                  | Password for the Rubrik Cloud Cluster admin account.                                                                     | string |      RubrikGoForward       |    no    |
+| dns_search_domain                               | List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified.                  |  list  |                            |   yes    |
+| dns_name_servers                                | List of the IPv4 addresses of the DNS servers.                                                                           |  list  |                            |   yes    |
+| ntp_servers                                     | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                                |  list  |        ["8.8.8.8"]         |    no    |
+| timeout                                         | The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error.             |  int   |             15             |    no    |
 
 ## Running the Terraform Configuration
 
-This section outlines what is required to run the configuration defined above. 
+This section outlines what is required to run the configuration defined above.
 
 ### Prerequisites
 
-* [Terraform](https://www.terraform.io/downloads.html) v0.10.3 or greater
-* [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
+- [Terraform](https://www.terraform.io/downloads.html) v0.15.4 or greater
+- [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
+  - Only required to run the sample Rubrik Bootstrap command
 
 ### Initialize the Directory
 
@@ -89,7 +93,7 @@ commands will detect it and remind you to do so if necessary.
 
 ### Gain Access to the Rubrik Cloud Cluster AMI
 
-Access to the Rubrik Cloud Cluster AMI will need to be granted by Rubrik Support; this can be requested via a normal support ticket.
+The Terraform script will automatically install the latest version of Rubrik Cloud Cluster from the AWS Marketplace. If a different version of Cloud Cluster is required modify the filters in the `data "aws_ami_ids" "rubrik_cloud_cluster"` section of the Terraform script.
 
 ### Planning
 
@@ -101,6 +105,7 @@ We can now apply the configuration to create the cluster using the `terraform ap
 
 ### Configuring the Cloud Cluster
 
+If the example script for bootstrapping the Rubrik Cloud Cluster is not used, bootstrap the Rubrik Cloud Cluster as documented in the Rubrik Cloud Cluster guide.
 The Cloud Cluster can now be configured through the Web UI; access to the interface will depend on the Security Group applied in the configuration above.
 
 ### Destroying

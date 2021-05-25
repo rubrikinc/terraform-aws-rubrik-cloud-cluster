@@ -1,25 +1,43 @@
+variable "aws_region" {
+  description = "The region to deploy Rubrik Cloud Cluster nodes."
+}
 variable "aws_instance_type" {
-  description = "The type of instance to use as the Cloud Cluster nodes."
-  default     = "m5.xlarge"
+  description = "The type of instance to use as Rubrik Cloud Cluster nodes."
+  default     = "m5.4xlarge"
 }
 
 variable "aws_disable_api_termination" {
-  description = "If true, enables EC2 Instance Termination Protection"
+  description = "If true, enables EC2 Instance Termination Protection on the Rubrik Cloud Cluster nodes."
   default     = true
 }
 
-variable "aws_vpc_security_group_ids" {
-  type        = "list"
-  description = "A list of security group IDs to associate with the Cloud Cluster."
+variable "aws_vpc_security_group_name_cloud_cluster_nodes" {
+  description = "The name of the security group to create for Rubrik Cloud Cluster to use."
+  default     = "Rubrik Cloud Cluster"
+}
+
+variable "aws_vpc_security_group_name_cloud_cluster_hosts" {
+  description = "The name of the security group to create for Rubrik Cloud Cluster to communicate with EC2 instances."
+  default     = "Rubrik Cloud Cluster Hosts"
 }
 
 variable "aws_subnet_id" {
-  description = "The VPC Subnet ID to launch the Cloud Cluster in."
+  description = "The VPC Subnet ID to launch Rubrik Cloud Cluster in."
+}
+
+variable "aws_public_key" {
+  description = "The public key material needed to create an AWS key pair for use with Rubrik Cloud Cluster."
+  sensitive   = true
 }
 
 variable "number_of_nodes" {
-  description = "The total number of nodes in the Cloud Cluster."
+  description = "The total number of nodes in Rubrik Cloud Cluster."
   default     = 4
+}
+
+variable "cluster_disk_type" {
+  description = "The disk type to use for Rubrik Cloud Cluster data disks (sc1 or st1). NOTE: st1 disks require six 8TB disks."
+  default     = "st1"
 }
 
 variable "cluster_disk_size" {
@@ -28,26 +46,26 @@ variable "cluster_disk_size" {
 }
 
 variable "cluster_name" {
-  description = "Unique name to assign to the Rubrik cluster. This will also be used to populate the EC2 instance name tag. For example, rubrik-cloud-cluster-1, rubrik-cloud-cluster-2 etc."
+  description = "Unique name to assign to the Rubrik Cloud Cluster. This will also be used to populate the EC2 instance name tag. For example, rubrik-cloud-cluster-1, rubrik-cloud-cluster-2 etc."
   default     = "rubrik-cloud-cluster"
 }
 
 variable "admin_email" {
-  description = "The Rubrik cluster sends messages for the admin account to this email address."
+  description = "The Rubrik Cloud Cluster sends messages for the admin account to this email address."
 }
 
 variable admin_password {
-  description = "Password for the Cloud Cluster admin account."
+  description = "Password for the Rubrik Cloud Cluster admin account."
   default     = "RubrikGoForward"
 }
 
 variable "dns_search_domain" {
-  type        = "list"
+  type        = list
   description = "List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified."
 }
 
 variable "dns_name_servers" {
-  type        = "list"
+  type        = list
   description = "List of the IPv4 addresses of the DNS servers."
 }
 
