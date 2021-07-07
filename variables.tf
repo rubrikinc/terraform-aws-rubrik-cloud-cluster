@@ -45,6 +45,12 @@ variable "cluster_disk_size" {
   default     = "1024"
 }
 
+variable "cluster_disk_count" {
+  description = "The number of disks for each node in the cluster. Set to 0 to use with S3 storage for Cloud Cluster ES"
+  type = number
+  default = 4
+}
+
 variable "cluster_name" {
   description = "Unique name to assign to the Rubrik Cloud Cluster. This will also be used to populate the EC2 instance name tag. For example, rubrik-cloud-cluster-1, rubrik-cloud-cluster-2 etc."
   default     = "rubrik-cloud-cluster"
@@ -77,4 +83,16 @@ variable "ntp_servers" {
 variable "timeout" {
   description = "The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error."
   default     = 15
+}
+
+variable "aws_ami_owners" {
+  description = "Set of AWS Account that own the Rubrik Cloud Cluster AMI"
+  type = set(string)
+  default = ["679593333241"]
+}
+
+variable "aws_ami_filter" {
+  description = "Set of AWS AMI names to search for"
+  type = set(string)
+  default = ["rubrik-mp-cc-*"]
 }

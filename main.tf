@@ -24,11 +24,11 @@ data "aws_subnet" "rubrik_cloud_cluster" {
 }
 
 data "aws_ami_ids" "rubrik_cloud_cluster" {
-  owners = ["679593333241"] 
+  owners = var.aws_ami_owners
 
   filter {
     name   = "name"
-    values = ["rubrik-mp-cc-*"]
+    values = var.aws_ami_filter
   }
 }
 
@@ -123,45 +123,14 @@ resource "aws_instance" "rubrik_cluster" {
     encrypted = true
   }
   
-  ebs_block_device {
-    device_name = "/dev/sdb"
-    volume_type = "${var.cluster_disk_type}"
-    volume_size = "${var.cluster_disk_size}"
-    encrypted   = true
+  dynamic "ebs_block_device" {
+    for_each = range(var.cluster_disk_count)
+    content{
+      device_name = "/dev/sd${substr("bcdefghi",ebs_block_device.value,1)}"
+      volume_type = "${var.cluster_disk_type}"
+      volume_size = "${var.cluster_disk_size}"
+      encrypted   = true
+    }
   }
 
-  ebs_block_device {
-    device_name = "/dev/sdc"
-    volume_type = "${var.cluster_disk_type}"
-    volume_size = "${var.cluster_disk_size}"
-    encrypted   = true
-  }
-
-  ebs_block_device {
-    device_name = "/dev/sdd"
-    volume_type = "${var.cluster_disk_type}"
-    volume_size = "${var.cluster_disk_size}"
-    encrypted   = true
-  }
-
-  ebs_block_device {
-    device_name = "/dev/sde"
-    volume_type = "${var.cluster_disk_type}"
-    volume_size = "${var.cluster_disk_size}"
-    encrypted   = true
-  }
-
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    volume_type = "${var.cluster_disk_type}"
-    volume_size = "${var.cluster_disk_size}"
-    encrypted   = true
-  }
-
-  ebs_block_device {
-    device_name = "/dev/sdg"
-    volume_type = "${var.cluster_disk_type}"
-    volume_size = "${var.cluster_disk_size}"
-    encrypted   = true
-  }
 }
