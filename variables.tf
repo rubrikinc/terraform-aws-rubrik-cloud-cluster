@@ -21,6 +21,24 @@ variable "aws_vpc_security_group_name_cloud_cluster_hosts" {
   default     = "Rubrik Cloud Cluster Hosts"
 }
 
+variable "aws_security_group_ids" {
+  description = "Extra security groups to add to Rubrik cluster nodes"
+  type        = list(string)
+  default     = []
+}
+
+variable "aws_iam_instance_profile" {
+  description = "IAM instance profile for accessing S3 with Cloud Cluster ES"
+  type        = string
+  default     = ""
+}
+
+variable "aws_tags" {
+  description = "Extra tags to add to Rubrik cluster nodes"
+  type        = map(string)
+  default     = {}
+}
+
 variable "aws_subnet_id" {
   description = "The VPC Subnet ID to launch Rubrik Cloud Cluster in."
 }
@@ -47,8 +65,8 @@ variable "cluster_disk_size" {
 
 variable "cluster_disk_count" {
   description = "The number of disks for each node in the cluster. Set to 0 to use with S3 storage for Cloud Cluster ES"
-  type = number
-  default = 4
+  type        = number
+  default     = 4
 }
 
 variable "cluster_name" {
@@ -60,18 +78,18 @@ variable "admin_email" {
   description = "The Rubrik Cloud Cluster sends messages for the admin account to this email address."
 }
 
-variable admin_password {
+variable "admin_password" {
   description = "Password for the Rubrik Cloud Cluster admin account."
   default     = "RubrikGoForward"
 }
 
 variable "dns_search_domain" {
-  type        = list
+  type        = list(any)
   description = "List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified."
 }
 
 variable "dns_name_servers" {
-  type        = list
+  type        = list(any)
   description = "List of the IPv4 addresses of the DNS servers."
 }
 
@@ -87,12 +105,12 @@ variable "timeout" {
 
 variable "aws_ami_owners" {
   description = "Set of AWS Account that own the Rubrik Cloud Cluster AMI"
-  type = set(string)
-  default = ["679593333241"]
+  type        = set(string)
+  default     = ["679593333241"]
 }
 
 variable "aws_ami_filter" {
   description = "Set of AWS AMI names to search for"
-  type = set(string)
-  default = ["rubrik-mp-cc-*"]
+  type        = set(string)
+  default     = ["rubrik-mp-cc-*"]
 }
