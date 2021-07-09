@@ -1,22 +1,16 @@
-provider "aws" {
-  region = var.aws_region
-}
-
 #############################
 # Dynamic Variable Creation #
 #############################
-resource "null_resource" "create_cluster_node_name" {
-  count = var.number_of_nodes
-
-  triggers = {
-    node_number = "${count.index + 1}"
-  }
-}
-
 locals {
-  cluster_node_name = formatlist("${var.cluster_name}-%s", null_resource.create_cluster_node_name.*.triggers.node_number)
-
-  cluster_node_ips = aws_instance.rubrik_cluster.*.private_ip
+  cluster_node_names = formatlist("${var.cluster_name}-%s", range(1, var.number_of_nodes + 1))
+  cluster_node_ips   = [for i in aws_instance.rubrik_cluster: i.private_ip]
+  cluster_disks = {
+    for v in setproduct(local.cluster_node_names,range(var.cluster_disk_count)) : 
+      "${v[0]}-sd${substr("bcdefghi", v[1], 1)}" => {
+        "instance" = v[0],
+        "device"   = "/dev/sd${substr("bcdefghi", v[1], 1)}"
+      }
+  }
 }
 
 data "aws_subnet" "rubrik_cloud_cluster" {
@@ -129,9 +123,9 @@ resource "aws_security_group_rule" "rubrik_cloud_cluster_rbs" {
 ###############################
 
 resource "aws_instance" "rubrik_cluster" {
-  count         = var.number_of_nodes
+  for_each = toset(local.cluster_node_names)
   instance_type = var.aws_instance_type
-  ami           = element(data.aws_ami_ids.rubrik_cloud_cluster.ids, 0)
+  ami           = data.aws_ami_ids.rubrik_cloud_cluster.ids[0]
   vpc_security_group_ids = concat([
     aws_security_group.rubrik_cloud_cluster.id
   ], var.aws_security_group_ids)
@@ -139,7 +133,7 @@ resource "aws_instance" "rubrik_cluster" {
   key_name  = aws_key_pair.rubrik_cloud_cluster.key_name
 
   tags = merge({
-    Name = local.cluster_node_name[count.index] },
+    Name = each.value },
     var.aws_tags
   )
 
@@ -149,14 +143,23 @@ resource "aws_instance" "rubrik_cluster" {
     encrypted = true
   }
 
-  dynamic "ebs_block_device" {
-    for_each = range(var.cluster_disk_count)
-    content {
-      device_name = "/dev/sd${substr("bcdefghi", ebs_block_device.value, 1)}"
-      volume_type = var.cluster_disk_type
-      volume_size = var.cluster_disk_size
-      encrypted   = true
-    }
-  }
+}
 
+resource "aws_ebs_volume" "ebs_block_device" {
+  for_each = local.cluster_disks
+  availability_zone = data.aws_subnet.rubrik_cloud_cluster.availability_zone
+  type = var.cluster_disk_type
+  size = var.cluster_disk_size
+  tags = merge(
+    {Name = each.key},
+    var.aws_tags
+  )
+  encrypted   = true
+}
+
+resource "aws_volume_attachment" "ebs_att" {
+  for_each = local.cluster_disks
+  device_name = each.value.device
+  volume_id   = aws_ebs_volume.ebs_block_device[each.key].id
+  instance_id = aws_instance.rubrik_cluster[each.value.instance].id
 }

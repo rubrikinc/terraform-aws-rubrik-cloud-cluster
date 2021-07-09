@@ -1,5 +1,5 @@
 output "rubrik_cloud_cluster_ip_addrs" {
-  value = aws_instance.rubrik_cluster.*.private_ip
+  value = local.cluster_node_ips
 }
 
 output "rubrik_protected_hosts_security_group_id" {
