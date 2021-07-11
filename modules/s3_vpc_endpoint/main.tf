@@ -12,7 +12,7 @@ module "endpoints" {
       service = "s3"
       tags    = var.tags
       route_table_ids    = var.route_table_ids
-      vpc_endpoint_type = "Gateway"
+      service_type = "Gateway"
 
     }
   }
