@@ -157,9 +157,9 @@ module "iam_role" {
 
   bucket = module.s3_bucket.s3_bucket_id
   create = var.create_iam_role
-  role_name = "thingy"
-  role_policy_name = "thingy-pol"
-  instance_profile_name = "thingy-profile"
+  role_name = var.aws_cloud_cluster_iam_role_name == "" ? "${local.cluster_name}.role" : var.aws_cloud_cluster_iam_role_name
+  role_policy_name = var.aws_cloud_cluster_iam_role_policy_name == "" ? "${local.cluster_name}.role-policy" : var.aws_cloud_cluster_iam_role_policy_name
+  instance_profile_name = var.aws_cloud_cluster_ec2_instance_profile_name == "" ? "${local.cluster_name}.instance-profile" : var.aws_cloud_cluster_ec2_instance_profile_name
 } 
 
 ###############################

@@ -171,3 +171,22 @@ variable "s3_bucket_name" {
   type = string
   default = ""
 }
+
+variable "aws_cloud_cluster_iam_role_name" {
+  description = "Optional name to assign to the AWS IAM Role that is used to access S3"
+  type = string
+  default = ""
+}
+
+variable "aws_cloud_cluster_iam_role_policy_name" {
+  description = "Optional name to assign to the AWS IAM Role policy that is used to access S3"
+  type = string
+  default = ""
+}
+
+variable "aws_cloud_cluster_ec2_instance_profile_name" {
+  description = "Optional name to assign to the AWS EC2 Instance Profile that links the IAM Role to the cluster"
+  type = string
+  default = ""
+}
+
