@@ -8,10 +8,11 @@ module "endpoints" {
 
   endpoints = {
     s3 = {
-      # interface endpoint
+      # gateway endpoint
       service = "s3"
       tags    = var.tags
       route_table_ids    = var.route_table_ids
+      vpc_endpoint_type = "Gateway"
 
     }
   }

@@ -3,7 +3,7 @@
 #############################
 locals {
   cluster_name = var.environment == "" ? var.cluster_name : "${var.environment}.${var.cluster_name}"
-  cluster_node_names = formatlist("${local.cluster_name}-%01s", range(1, var.number_of_nodes + 1))
+  cluster_node_names = formatlist("${local.cluster_name}-%02s", range(1, var.number_of_nodes + 1))
   cluster_node_config = {
     "instance_type" = var.aws_instance_type,
     "ami_id" = data.aws_ami_ids.rubrik_cloud_cluster.ids[0],
@@ -145,7 +145,7 @@ module "rubrik_hosts_sg_rules" {
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket = (var.s3_bucket_name == "" ? "${local.cluster_name}.bucket-DO-NOT-DELETE" : var.s3_bucket_name)
+  bucket = (var.s3_bucket_name == "" ? "${local.cluster_name}.bucket-do-not-delete" : var.s3_bucket_name)
   acl    = "private"
 }
 
