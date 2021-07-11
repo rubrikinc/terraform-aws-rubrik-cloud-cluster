@@ -2,19 +2,38 @@
 # Dynamic Variable Creation #
 #############################
 locals {
-  cluster_node_names = formatlist("${var.cluster_name}-%s", range(1, var.number_of_nodes + 1))
-  cluster_node_ips   = [for i in aws_instance.rubrik_cluster: i.private_ip]
+  cluster_name = var.environment == "" ? var.cluster_name : "${var.environment}.${var.cluster_name}"
+  cluster_node_names = formatlist("${local.cluster_name}-%01s", range(1, var.number_of_nodes + 1))
+  cluster_node_config = {
+    "instance_type" = var.aws_instance_type,
+    "ami_id" = data.aws_ami_ids.rubrik_cloud_cluster.ids[0],
+    "sg_ids" = concat(var.aws_cloud_cluster_nodes_sg_ids, [module.rubrik_nodes_sg.security_group_id]),
+    "subnet_id" = var.aws_subnet_id,
+    "key_pair_name" = local.aws_key_pair_name,
+    "disable_api_termination" = var.aws_disable_api_termination,
+    "iam_instance_profile" = module.iam_role.aws_iam_instance_profile.name,
+    "availability_zone" = data.aws_subnet.rubrik_cloud_cluster.availability_zone,
+    "tags" = var.aws_tags
+  }
+  cluster_node_ips   = [for i in module.cluster_nodes.instances: i.private_ip]
   cluster_disks = {
     for v in setproduct(local.cluster_node_names,range(var.cluster_disk_count)) : 
       "${v[0]}-sd${substr("bcdefghi", v[1], 1)}" => {
         "instance" = v[0],
         "device"   = "/dev/sd${substr("bcdefghi", v[1], 1)}"
+        "size" = var.cluster_disk_size
+        "type" = var.cluster_disk_type
       }
   }
+  cluster_tag = var.environment_tag == "" ? local.cluster_name : "${var.environment_tag}:${local.cluster_name}"
 }
 
 data "aws_subnet" "rubrik_cloud_cluster" {
   id = var.aws_subnet_id
+}
+
+data "aws_vpc" "rubrik_cloud_cluster" {
+  id = data.aws_subnet.rubrik_cloud_cluster.vpc_id
 }
 
 data "aws_ami_ids" "rubrik_cloud_cluster" {
@@ -30,136 +49,127 @@ data "aws_ami_ids" "rubrik_cloud_cluster" {
 # SSH KEY PAIR FOR INSTANCES #
 ##############################
 
-resource "aws_key_pair" "rubrik_cloud_cluster" {
-  key_name   = "${var.cluster_name}-key-pair"
+module "aws_key_pair" {
+  source = "terraform-aws-modules/key-pair/aws"
+
+  key_name   = var.aws_key_pair_name == "" ? "${local.cluster_name}.key-pair" : var.aws_key_pair_name
   public_key = var.aws_public_key
+  create_key_pair = var.create_key_pair
 }
 
-#########################################
-# Security Group for the Rubrik Cluster #
-#########################################
+locals {
+  aws_key_pair_name = var.aws_key_pair_name == "" ? module.aws_key_pair.key_pair_key_name : var.aws_key_pair_name
+}
 
-resource "aws_security_group" "rubrik_cloud_cluster" {
-  name        = var.aws_vpc_security_group_name_cloud_cluster_nodes
-  description = "Allow hosts to talk to Rubrik Cloud Cluster"
-  vpc_id      = data.aws_subnet.rubrik_cloud_cluster.vpc_id
+########################################
+# S3 VPC Endpoint for Cloud Cluster ES #
+########################################
+
+module "s3_vpc_endpoint" {
+  source = "./modules/s3_vpc_endpoint"
+
+  create = var.create_s3_vpc_endpoint
+  vpc_id = data.aws_subnet.rubrik_cloud_cluster.vpc_id
+  #route_table_ids = [data.aws_vpc.rubrik_cloud_cluster.main_route_table_id]
+  #endpoint_name = (var.s3_vpc_endpoint_name == "" ? "${local.cluster_name}.vpc-ep" : var.s3_vpc_endpoint_name)
   tags = merge(
-    var.aws_tags,
-    { "sg:purpose" = "rubrik-cluster-to-self" }
+    var.aws_tags
   )
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_security_group_rule" "rubrik_cloud_cluster_node_ingress" {
-  type              = "ingress"
-  description       = "Intra cluster communication"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  self              = true
-  security_group_id = aws_security_group.rubrik_cloud_cluster.id
-}
-
-resource "aws_security_group_rule" "rubrik_cloud_cluster_node_egress" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = aws_security_group.rubrik_cloud_cluster.id
-}
-
-resource "aws_security_group_rule" "rubrik_cloud_cluster_cli_admin" {
-  type                     = "ingress"
-  description              = "CLI administration of the nodes"
-  from_port                = 22
-  to_port                  = 22
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.rubrik_cloud_cluster.id
-  source_security_group_id = aws_security_group.rubrik_hosts.id
-}
-
-resource "aws_security_group_rule" "rubrik_cloud_cluster_web_admin" {
-  type                     = "ingress"
-  description              = "Web administration of the nodes"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.rubrik_cloud_cluster.id
-  source_security_group_id = aws_security_group.rubrik_hosts.id
 }
 
 
-resource "aws_security_group" "rubrik_hosts" {
-  name        = var.aws_vpc_security_group_name_cloud_cluster_hosts
-  description = "Allow Rubrik Cloud Cluster to communicate with hosts"
+######################################################################
+# Create, then configure, the Security Groups for the Rubrik Cluster #
+######################################################################
+module "rubrik_nodes_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  use_name_prefix = true
+  name = var.aws_vpc_cloud_cluster_nodes_sg_name == "" ? "${local.cluster_name}.sg" : var.aws_vpc_cloud_cluster_nodes_sg_name
+  description = "Allow hosts to talk to Rubrik Cloud Cluster and Cluster to talk to itself"
   vpc_id      = data.aws_subnet.rubrik_cloud_cluster.vpc_id
+  create = var.create_aws_rubrik_hosts_sg
   tags = merge(
-    var.aws_tags,
-    { "sg:purpose" = "rubrik-cluster-to-self" }
+    {name = "${local.cluster_tag}:sg"},
+    var.aws_tags
   )
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
-resource "aws_security_group_rule" "rubrik_cloud_cluster_rbs" {
-  type                     = "ingress"
-  description              = "Ports for Rubrik Backup Service (RBS)"
-  from_port                = 12800
-  to_port                  = 12801
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.rubrik_hosts.id
-  source_security_group_id = aws_security_group.rubrik_cloud_cluster.id
+module "rubrik_nodes_sg_rules" {
+  source = "./modules/rubrik_nodes_sg"
+  sg_id = module.rubrik_nodes_sg.security_group_id
+  rubrik_hosts_sg_id = module.rubrik_hosts_sg.security_group_id
+  create = var.create_aws_rubrik_hosts_sg
+  tags = merge(
+    {name = "${local.cluster_tag}:sg-rule"},
+    var.aws_tags
+  )
+  depends_on = [
+    module.rubrik_hosts_sg
+  ]
 }
+
+module "rubrik_hosts_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  use_name_prefix = true
+  name = var.aws_vpc_cloud_cluster_nodes_sg_name == "" ? "${local.cluster_name}.sg" : var.aws_vpc_cloud_cluster_nodes_sg_name
+  description = "Allow Rubrik Cloud Cluster to talk to hosts, and hosts with this security group can talk to cluster"
+  vpc_id      = data.aws_subnet.rubrik_cloud_cluster.vpc_id
+  create = var.create_aws_rubrik_hosts_sg
+  tags = merge(
+    {name = "${local.cluster_tag}:sg"},
+    var.aws_tags
+  )
+}
+
+module "rubrik_hosts_sg_rules" {
+  source = "./modules/rubrik_hosts_sg"
+
+  sg_id = module.rubrik_hosts_sg.security_group_id
+  rubrik_nodes_sg_id = module.rubrik_nodes_sg.security_group_id
+  create = var.create_aws_rubrik_hosts_sg
+  tags = merge(
+    {name = "${local.cluster_tag}:sg-rule"},
+    var.aws_tags
+  )
+  depends_on = [
+    module.rubrik_nodes_sg
+  ]
+}
+
+
+###########################
+# Create S3 Bucket in AWS #
+###########################
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = (var.s3_bucket_name == "" ? "${local.cluster_name}.bucket-DO-NOT-DELETE" : var.s3_bucket_name)
+  acl    = "private"
+}
+
+##############################
+# Create IAM Role and Policy #
+##############################
+module "iam_role" {
+  source = "./modules/iam_role"
+
+  bucket = module.s3_bucket.s3_bucket_id
+  create = var.create_iam_role
+  role_name = "thingy"
+  role_policy_name = "thingy-pol"
+  instance_profile_name = "thingy-profile"
+} 
 
 ###############################
 # Create EC2 Instances in AWS #
 ###############################
 
-resource "aws_instance" "rubrik_cluster" {
-  for_each = toset(local.cluster_node_names)
-  instance_type = var.aws_instance_type
-  ami           = data.aws_ami_ids.rubrik_cloud_cluster.ids[0]
-  vpc_security_group_ids = concat([
-    aws_security_group.rubrik_cloud_cluster.id
-  ], var.aws_security_group_ids)
-  subnet_id = var.aws_subnet_id
-  key_name  = aws_key_pair.rubrik_cloud_cluster.key_name
-
-  tags = merge({
-    Name = each.value },
-    var.aws_tags
-  )
-
-  disable_api_termination = var.aws_disable_api_termination
-  iam_instance_profile    = var.aws_iam_instance_profile
-  root_block_device {
-    encrypted = true
-  }
-
-}
-
-resource "aws_ebs_volume" "ebs_block_device" {
-  for_each = local.cluster_disks
-  availability_zone = data.aws_subnet.rubrik_cloud_cluster.availability_zone
-  type = var.cluster_disk_type
-  size = var.cluster_disk_size
-  tags = merge(
-    {Name = each.key},
-    var.aws_tags
-  )
-  encrypted   = true
-}
-
-resource "aws_volume_attachment" "ebs_att" {
-  for_each = local.cluster_disks
-  device_name = each.value.device
-  volume_id   = aws_ebs_volume.ebs_block_device[each.key].id
-  instance_id = aws_instance.rubrik_cluster[each.value.instance].id
+module "cluster_nodes" {
+  source = "./modules/rubrik_aws_instances"
+  
+  node_names = local.cluster_node_names
+  node_config = local.cluster_node_config
+  disks = local.cluster_disks
 }
