@@ -145,6 +145,7 @@ module "rubrik_hosts_sg_rules" {
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
+  create_bucket = var.create_s3_bucket
   bucket = (var.s3_bucket_name == "" ? "${local.cluster_name}.bucket-do-not-delete" : var.s3_bucket_name)
   acl    = "private"
 }

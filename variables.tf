@@ -65,7 +65,7 @@ variable "cluster_disk_size" {
 }
 
 variable "cluster_disk_count" {
-  description = "The number of disks for each node in the cluster. Set to 0 to use with S3 storage for Cloud Cluster ES"
+  description = "The number of disks for each node in the cluster. Set to 1 to use with S3 storage for Cloud Cluster ES"
   type        = number
   default     = 4
 }
@@ -161,9 +161,15 @@ variable "create_iam_role" {
 }
 
 variable "create_s3_vpc_endpoint" {
-  description = "Should the required VPC Endpoint and S3 Endpoint Service be created?"
+  description = "Should the required VPC Endpoint and S3 Endpoint Service for Cloud Cluster ES be created?"
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "create_s3_bucket" {
+  description = "Should the required S3 bucket for Cloud Cluster ES be created?"
+  type        = bool
+  default     = false
 }
 
 variable "s3_bucket_name" {

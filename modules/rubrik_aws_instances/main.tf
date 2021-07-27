@@ -17,7 +17,7 @@ variable "node_config" {
 }
 
 variable "disks" {
-  type = map(string)
+  type = map(any)
 }
 
 resource "aws_instance" "rubrik_cluster" {
