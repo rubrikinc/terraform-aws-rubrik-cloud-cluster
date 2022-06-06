@@ -15,3 +15,7 @@ variable "tags" {
 variable "rubrik_hosts_sg_id" {
   type = string
 }
+
+variable "cloud_cluster_nodes_admin_cidr" {
+  type = string
+}

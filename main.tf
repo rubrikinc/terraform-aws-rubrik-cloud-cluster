@@ -105,10 +105,11 @@ module "rubrik_nodes_sg" {
 }
 
 module "rubrik_nodes_sg_rules" {
-  source             = "./modules/rubrik_nodes_sg"
-  sg_id              = module.rubrik_nodes_sg.security_group_id
-  rubrik_hosts_sg_id = module.rubrik_hosts_sg.security_group_id
-  create             = var.create_aws_rubrik_hosts_sg
+  source                          = "./modules/rubrik_nodes_sg"
+  sg_id                           = module.rubrik_nodes_sg.security_group_id
+  rubrik_hosts_sg_id              = module.rubrik_hosts_sg.security_group_id
+  create                          = var.create_cloud_cluster_hosts_sg
+  cloud_cluster_nodes_admin_cidr  = var.cloud_cluster_nodes_admin_cidr 
   tags = merge(
     { name = "${var.cluster_name}:sg-rule" },
     var.aws_tags

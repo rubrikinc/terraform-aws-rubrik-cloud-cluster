@@ -38,7 +38,22 @@ module "this" {
       protocol                 = -1
       source_security_group_id = var.rubrik_hosts_sg_id
     }
-
+  ]
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "Admin port for web service"
+      cidr_blocks = var.cloud_cluster_nodes_admin_cidr 
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      description = "Admin port for ssh"
+      cidr_blocks = var.cloud_cluster_nodes_admin_cidr 
+    }
   ]
 
   tags = merge(

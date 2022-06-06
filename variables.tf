@@ -66,10 +66,10 @@ variable "cluster_disk_size" {
   default     = "1024"
 }
 
-variable "cluster_disk_count" {
-  description = "The number of disks for each node in the cluster. Set to 1 to use with S3 storage for Cloud Cluster ES"
-  type        = number
-  default     = 4
+variable "cloud_cluster_nodes_admin_cidr" {
+  description = "The CIDR range for the systems used to administer the Cloud Cluster via SSH and HTTPS."
+  type        = string
+  default     = "0.0.0.0/0"
 }
 
 variable "cluster_name" {
