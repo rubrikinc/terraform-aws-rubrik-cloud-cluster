@@ -39,6 +39,7 @@ The following are the variables accepted by the module.
 | aws_key_pair_name                               | Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used.                                 | string |                            |    no    |
 *Note: The `aws_ami_filter` and `aws_ami_owners` variables are only used when the `aws_image_id` variable is blank or set to `latest`*
 | cloud_cluster_nodes_admin_cidr                  | The CIDR range for the systems used to administer the Cloud Cluster via SSH and HTTPS.                                   | string |         0.0.0.0/0          |    no    |
+| create_cloud_cluster_hosts_sg                   | If true, creates a new Security Group for node to host traffic from the Rubrik cluster.                                  | string |            true            |    no    |
 | aws_subnet_id                                   | The VPC Subnet ID to launch Rubrik Cloud Cluster in.                                                                     | string |                            |   yes    |
 | aws_public_key                                  | he public key material needed to create an AWS key pair for use with Rubrik Cloud Cluster.                               | string |                            |   yes    |
 | number_of_nodes                                 | The total number of nodes in Rubrik Cloud Cluster.                                                                       |  int   |             4              |    no    |

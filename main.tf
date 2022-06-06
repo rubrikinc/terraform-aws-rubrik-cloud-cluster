@@ -98,7 +98,7 @@ module "rubrik_nodes_sg" {
   name            = var.aws_vpc_cloud_cluster_nodes_sg_name == "" ? "${var.cluster_name}.sg" : var.aws_vpc_cloud_cluster_nodes_sg_name
   description     = "Allow hosts to talk to Rubrik Cloud Cluster and Cluster to talk to itself"
   vpc_id          = data.aws_subnet.rubrik_cloud_cluster.vpc_id
-  create          = var.create_aws_rubrik_hosts_sg
+  create          = var.create_cloud_cluster_hosts_sg
   tags = merge(
     { name = "${var.cluster_name}:sg" },
     var.aws_tags
@@ -127,7 +127,7 @@ module "rubrik_hosts_sg" {
   name            = var.aws_vpc_cloud_cluster_hosts_sg_name == "" ? "${var.cluster_name}.sg" : var.aws_vpc_cloud_cluster_hosts_sg_name
   description     = "Allow Rubrik Cloud Cluster to talk to hosts, and hosts with this security group can talk to cluster"
   vpc_id          = data.aws_subnet.rubrik_cloud_cluster.vpc_id
-  create          = var.create_aws_rubrik_hosts_sg
+  create          = var.create_cloud_cluster_hosts_sg
   tags = merge(
     { name = "${var.cluster_name}:sg" },
     var.aws_tags
@@ -139,7 +139,7 @@ module "rubrik_hosts_sg_rules" {
 
   sg_id              = module.rubrik_hosts_sg.security_group_id
   rubrik_nodes_sg_id = module.rubrik_nodes_sg.security_group_id
-  create             = var.create_aws_rubrik_hosts_sg
+  create             = var.create_cloud_cluster_hosts_sg
   tags = merge(
     { name = "${var.cluster_name}:sg-rule" },
     var.aws_tags

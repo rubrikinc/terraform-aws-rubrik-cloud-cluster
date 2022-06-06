@@ -73,10 +73,10 @@ variable "cloud_cluster_nodes_admin_cidr" {
   type        = string
   default     = "0.0.0.0/0"
 }
-
-variable "cluster_name" {
-  description = "Unique name to assign to the Rubrik Cloud Cluster. This will also be used to populate the EC2 instance name tag. For example, rubrik-cloud-cluster-1, rubrik-cloud-cluster-2 etc."
-  default     = "rubrik-cloud-cluster"
+variable "create_cloud_cluster_hosts_sg" {
+  description = "If true, creates a new Security Group for node to host traffic from the Rubrik cluster."
+  type        = bool
+  default     = true
 }
 
 variable "admin_email" {
