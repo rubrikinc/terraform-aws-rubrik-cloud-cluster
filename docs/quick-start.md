@@ -11,6 +11,7 @@ module "rubrik_aws_cloud_cluster" {
   source  = "rubrikinc/rubrik-cloud-cluster/aws"
 
   aws_region                 = "us-west-1"
+  aws_ami_filter             = ["rubrik-mp-cc-7*"]
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
   dns_search_domain          = ["rubrikdemo.com"]
@@ -27,8 +28,10 @@ The following are the variables accepted by the module.
 | Name                                            | Description                                                                                                              |  Type  |          Default           | Required |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | :----: | :------------------------: | :------: |
 | aws_region                                      | The region to deploy Rubrik Cloud Cluster nodes.                                                                         | string |                            |   yes    |
+| aws_ami_filter                                  | Cloud Cluster AWS AMI name pattern(s) to search for. Use [\"rubrik-mp-cc-<X>*\"]. Where <X> is the major version of CDM. |  list  |                            |   yes    |
 | create_key_pair                                 | If true, a new AWS SSH Key-Pair will be created using the aws_key_pair_name and aws_public_key settings.                 |  bool  |            true            |    no    |
 | aws_key_pair_name                               | Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used.                                 | string |                            |    no    |
+*Note: The `aws_ami_filter` and `aws_ami_owners` variables are only used when the `aws_image_id` variable is blank or set to `latest`*
 | cloud_cluster_nodes_admin_cidr                  | The CIDR range for the systems used to administer the Cloud Cluster via SSH and HTTPS.                                   | string |         0.0.0.0/0          |    no    |
 | aws_subnet_id                                   | The VPC Subnet ID to launch Rubrik Cloud Cluster in.                                                                     | string |                            |   yes    |
 | aws_public_key                                  | he public key material needed to create an AWS key pair for use with Rubrik Cloud Cluster.                               | string |                            |   yes    |
@@ -91,7 +94,7 @@ commands will detect it and remind you to do so if necessary.
 
 ### Gain Access to the Rubrik Cloud Cluster AMI
 
-The Terraform script will automatically install the latest version of Rubrik Cloud Cluster from the AWS Marketplace. If a different version of Cloud Cluster is required modify the filters in the `data "aws_ami_ids" "rubrik_cloud_cluster"` section of the Terraform script.
+The Terraform script will automatically install the latest maintenance release of Rubrik Cloud Cluster major version (as defined by the `aws_ami_filter` variable) from the AWS Marketplace. If a different version of Cloud Cluster is required modify the filters in the `aws_image_id`, `aws_ami_owners` and/or `aws_ami_filter` variables.
 
 ### Planning
 
@@ -109,3 +112,42 @@ The Cloud Cluster can now be configured through the Web UI; access to the interf
 ### Destroying
 
 Once the Cloud Cluster is no longer required, it can be destroyed using the `terraform destroy` command, and entering `yes` when prompted. This will also destroy the attached EBS volumes.
+
+## Selecting a specific image
+
+To select a specific image to deploy replace the `aws_image_id` variable with the AMI ID of the Rubrik Marketplace Image to deploy. To find a list of the Rubrik Cloud Cluster images that are available in a specific region run the following `aws` cli command (requires that the AWS CLI be installed):
+
+```none
+  aws ec2 describe-images \
+    --filters 'Name=owner-id,Values=679593333241' 'Name=name,Values=rubrik-mp-cc-<X>*' \
+     --query 'sort_by(Images, &CreationDate)[*].{"Create Date":CreationDate, "Image ID":ImageId, Version:Description}' \
+    --region '<region>' \
+    --output table
+```
+
+Where <X> is the major version of Rubrik CDM (ex. `rubrik-mp-cc-7*`)
+
+Example: 
+
+```none
+aws ec2 describe-images \
+     --filters 'Name=owner-id,Values=679593333241' 'Name=name,Values=rubrik-mp-cc-7*' \
+     --query 'sort_by(Images, &CreationDate)[*].{"Create Date":CreationDate, "Image ID":ImageId, Version:Description}' \
+      --region 'us-west-2' \
+     --output table
+
+------------------------------------------------------------------------------------------
+|                                     DescribeImages                                     |
++--------------------------+-------------------------+-----------------------------------+
+|        Create Date       |        Image ID         |              Version              |
++--------------------------+-------------------------+-----------------------------------+
+|  2022-02-04T21:49:48.000Z|  ami-0056ddcc69df6fb5c  |  Rubrik OS rubrik-7-0-0-14764     |
+|  2022-04-01T00:13:58.000Z|  ami-026233b876a279622  |  Rubrik OS rubrik-7-0-1-15183     |
+|  2022-04-12T04:50:31.000Z|  ami-03d68b150241012ec  |  Rubrik OS rubrik-7-0-1-p1-15197  |
+|  2022-04-27T05:56:27.000Z|  ami-09a3baba1545aa5f7  |  Rubrik OS rubrik-7-0-1-p2-15336  |
+|  2022-05-13T21:51:54.000Z|  ami-0af1ff3ee7517fefa  |  Rubrik OS rubrik-7-0-1-p3-15425  |
+|  2022-05-20T00:01:55.000Z|  ami-0cc1db55e45f3109b  |  Rubrik OS rubrik-7-0-1-p4-15453  |
+|  2022-05-26T19:08:31.000Z|  ami-04d6af7c6f6629ce1  |  Rubrik OS rubrik-7-0-2-15510     |
++--------------------------+-------------------------+-----------------------------------+
+```
+

@@ -28,8 +28,10 @@ variable "aws_cloud_cluster_nodes_sg_ids" {
   default     = []
 }
 
-variable "aws_iam_instance_profile" {
-  description = "IAM instance profile for accessing S3 with Cloud Cluster ES"
+variable "aws_ami_filter" {
+  description = "Cloud Cluster AWS AMI name pattern(s) to search for. Use [\"rubrik-mp-cc-<X>*\"]. Where <X> is the major version of CDM. Ex. [\"rubrik-mp-cc-7\"]"
+  type        = set(string)
+}
   type        = string
   default     = ""
 }
