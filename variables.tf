@@ -34,14 +34,16 @@ variable "aws_iam_instance_profile" {
   default     = ""
 }
 
-variable "aws_tags" {
-  description = "Extra tags to add to Rubrik cluster nodes"
-  type        = map(string)
-  default     = {}
+variable "create_key_pair" {
+  description = "If true, a new AWS SSH Key-Pair will be created using the aws_key_pair_name and aws_public_key settings."
+  type        = bool
+  default     = true
 }
 
-variable "aws_subnet_id" {
-  description = "The VPC Subnet ID to launch Rubrik Cloud Cluster in."
+variable "aws_key_pair_name" {
+  description = "Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used."
+  type        = string
+  default     = ""
 }
 
 variable "aws_public_key" {

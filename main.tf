@@ -25,7 +25,21 @@ locals {
       "type"     = var.cluster_disk_type
     }
   }
-  cluster_tag = var.environment_tag == "" ? local.cluster_name : "${var.environment_tag}:${local.cluster_name}"
+  create_key_pair = var.create_key_pair ? 1 : 0
+}
+
+# RSA key of size 4096 bits
+resource "tls_private_key" "cc-key" {
+  count = local.create_key_pair
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "cc-key-file" {
+  count = local.create_key_pair
+  content = tls_private_key.cc-key[0].private_key_pem
+  filename = var.private-key-file
+  file_permission = "400"
 }
 
 data "aws_subnet" "rubrik_cloud_cluster" {

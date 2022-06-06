@@ -9,3 +9,7 @@ output "rubrik_hosts_sg_id" {
 output "s3_bucket" {
   value = module.s3_bucket.s3_bucket_id
 }
+
+output "private_key_file" {
+  value = var.create_key_pair ? var.private-key-file : null
+}
