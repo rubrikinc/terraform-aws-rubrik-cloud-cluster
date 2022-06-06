@@ -4,10 +4,11 @@
 locals {
   cluster_node_names = formatlist("${var.cluster_name}-%02s", range(1, var.number_of_nodes + 1))
   ami_id = var.aws_image_id == "" || var.aws_image_id == "latest" ? data.aws_ami_ids.rubrik_cloud_cluster.ids[0] : var.aws_image_id
+  sg_ids = var.aws_cloud_cluster_nodes_sg_ids == "" ? [module.rubrik_nodes_sg.security_group_id] : concat(var.aws_cloud_cluster_nodes_sg_ids, [module.rubrik_nodes_sg.security_group_id])
   cluster_node_config = {
     "instance_type"           = var.aws_instance_type,
     "ami_id"                  = local.ami_id,
-    "sg_ids"                  = concat(var.aws_cloud_cluster_nodes_sg_ids, [module.rubrik_nodes_sg.security_group_id]),
+    "sg_ids"                  = local.sg_ids,
     "subnet_id"               = var.aws_subnet_id,
     "key_pair_name"           = local.aws_key_pair_name,
     "disable_api_termination" = var.aws_disable_api_termination,
