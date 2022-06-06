@@ -27,7 +27,9 @@ resource "aws_instance" "rubrik_cluster" {
   vpc_security_group_ids = var.node_config.sg_ids
   subnet_id = var.node_config.subnet_id
   key_name  = var.node_config.key_pair_name
-
+  lifecycle {
+    ignore_changes = [ami]
+  }
   tags = merge({
     Name = each.value },
     var.node_config.tags
