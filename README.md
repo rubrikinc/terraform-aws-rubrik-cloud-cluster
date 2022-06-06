@@ -17,8 +17,7 @@ Here are some resources to get you started! If you find any challenges from this
 module "rubrik_aws_cloud_cluster" {
   source  = "rubrikinc/rubrik-cloud-cluster/aws"
 
-  aws_vpc_security_group_ids = ["sg-0fc82928bd323ed3qq"]
-  aws_subnet_id              = "subnet-0278a40b29e52203a"
+  aws_region                 = "us-west-1"
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
   dns_search_domain          = ["rubrikdemo.com"]
