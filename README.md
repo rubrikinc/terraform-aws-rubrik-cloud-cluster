@@ -18,6 +18,7 @@ module "rubrik_aws_cloud_cluster" {
   source  = "rubrikinc/rubrik-cloud-cluster/aws"
 
   aws_region                 = "us-west-1"
+  aws_subnet_id              = "subnet-1234567890abcdefg"
   aws_ami_filter             = ["rubrik-mp-cc-7*"]
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
@@ -107,10 +108,17 @@ The following are the variables accepted by the module.
 
 There are a few services you'll need in order to get this project off the ground:
 
-- [Terraform](https://www.terraform.io/downloads.html) v0.15.4 or greater
+- [Terraform](https://www.terraform.io/downloads.html) v1.2.2 or greater
 - [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
   - Only required to run the sample Rubrik Bootstrap command
+- The Rubik Cloud Cluster product in the AWS Marketplace must be subscribed to. Otherwise an error like this will be displayed:
+  > Error: creating EC2 Instance: OptInRequired: In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=<sku_number>
 
+    If this occurs, open the specific link from the error, while logged into the AWS account where Cloud Cluster will be deployed. Follow the instructions for subscribing to the product.
+
+## Changes
+
+Several variables have changed with this iteration of the script. Upgrades to existing deployments may cause unwanted changes.  Be sure to check the changes of `terraform plan` before `terraform apply` to avoid disruptive behavior. 
 ## How You Can Help
 
 We glady welcome contributions from the community. From updating the documentation to adding more functionality, all ideas are welcome. Thank you in advance for all of your issues, pull requests, and comments!

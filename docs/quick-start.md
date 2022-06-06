@@ -11,6 +11,7 @@ module "rubrik_aws_cloud_cluster" {
   source  = "rubrikinc/rubrik-cloud-cluster/aws"
 
   aws_region                 = "us-west-1"
+  aws_subnet_id              = "subnet-1234567890abcdefg"
   aws_ami_filter             = ["rubrik-mp-cc-7*"]
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
@@ -104,34 +105,56 @@ This section outlines what is required to run the configuration defined above.
 
 ### Prerequisites
 
-- [Terraform](https://www.terraform.io/downloads.html) v0.15.4 or greater
+- [Terraform](https://www.terraform.io/downloads.html) v1.2.2 or greater
 - [Rubrik Provider for Terraform](https://github.com/rubrikinc/rubrik-provider-for-terraform) - provides Terraform functions for Rubrik
   - Only required to run the sample Rubrik Bootstrap command
+- The Rubik Cloud Cluster product in the AWS Marketplace must be subscribed to. Otherwise an error like this will be displayed:
+  > Error: creating EC2 Instance: OptInRequired: In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=<sku_number>
+
+    If this occurs, open the specific link from the error, while logged into the AWS account where Cloud Cluster will be deployed. Follow the instructions for subscribing to the product.
 
 ### Initialize the Directory
 
 The directory can be initialized for Terraform use by running the `terraform init` command:
 
 ```none
+-> terraform init
 Initializing modules...
-- module.rubrik_aws_cloud_cluster
-  Getting source "rubrikinc/aws-rubrik-cloud-cluster/module"
+Downloading registry.terraform.io/terraform-aws-modules/key-pair/aws 1.0.1 for aws_key_pair...
+- aws_key_pair in .terraform/modules/aws_key_pair
+- cluster_nodes in modules/rubrik_aws_instances
+- iam_role in modules/iam_role
+Downloading registry.terraform.io/terraform-aws-modules/security-group/aws 4.9.0 for rubrik_hosts_sg...
+- rubrik_hosts_sg in .terraform/modules/rubrik_hosts_sg
+- rubrik_hosts_sg_rules in modules/rubrik_hosts_sg
+Downloading registry.terraform.io/terraform-aws-modules/security-group/aws 4.9.0 for rubrik_hosts_sg_rules.this...
+- rubrik_hosts_sg_rules.this in .terraform/modules/rubrik_hosts_sg_rules.this
+Downloading registry.terraform.io/terraform-aws-modules/security-group/aws 4.9.0 for rubrik_nodes_sg...
+- rubrik_nodes_sg in .terraform/modules/rubrik_nodes_sg
+- rubrik_nodes_sg_rules in modules/rubrik_nodes_sg
+Downloading registry.terraform.io/terraform-aws-modules/security-group/aws 4.9.0 for rubrik_nodes_sg_rules.this...
+- rubrik_nodes_sg_rules.this in .terraform/modules/rubrik_nodes_sg_rules.this
+Downloading registry.terraform.io/terraform-aws-modules/s3-bucket/aws 3.2.3 for s3_bucket...
+- s3_bucket in .terraform/modules/s3_bucket
+- s3_vpc_endpoint in modules/s3_vpc_endpoint
+Downloading registry.terraform.io/terraform-aws-modules/vpc/aws 3.14.0 for s3_vpc_endpoint.endpoints...
+- s3_vpc_endpoint.endpoints in .terraform/modules/s3_vpc_endpoint.endpoints/modules/vpc-endpoints
+
+Initializing the backend...
 
 Initializing provider plugins...
-- Checking for available provider plugins on https://releases.hashicorp.com...
-- Downloading plugin for provider "aws" (2.2.0)...
-- Downloading plugin for provider "null" (2.1.0)...
-
-The following providers do not have any version constraints in configuration,
-so the latest version was installed.
-
-To prevent automatic upgrades to new major versions that may contain breaking
-changes, it is recommended to add version = "..." constraints to the
-corresponding provider blocks in configuration, with the constraint strings
-suggested below.
-
-* provider.aws: version = "~> 2.2"
-* provider.null: version = "~> 2.1"
+- Reusing previous version of hashicorp/tls from the dependency lock file
+- Reusing previous version of hashicorp/local from the dependency lock file
+- Reusing previous version of hashicorp/template from the dependency lock file
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Installing hashicorp/tls v3.4.0...
+- Installed hashicorp/tls v3.4.0 (signed by HashiCorp)
+- Installing hashicorp/local v2.2.3...
+- Installed hashicorp/local v2.2.3 (signed by HashiCorp)
+- Installing hashicorp/template v2.2.0...
+- Installed hashicorp/template v2.2.0 (signed by HashiCorp)
+- Installing hashicorp/aws v4.15.1...
+- Installed hashicorp/aws v4.15.1 (signed by HashiCorp)
 
 Terraform has been successfully initialized!
 
@@ -203,3 +226,29 @@ aws ec2 describe-images \
 +--------------------------+-------------------------+-----------------------------------+
 ```
 
+## Known issues
+
+There are a few known issues when using this Terraform module. These are described below.
+
+### Multiple existing S3 endpoints
+
+If there is already an S3 endpoint defined setting the variable `create_s3_vpc_endpoint` to `true` may cause the following error:
+
+> Error: multiple VPC Endpoints matched; use additional constraints to reduce matches to a single VPC Endpoint
+
+If this happens set teh `create_s3_vpc_endpoint` variable to `false`. Verify that the current VPC endpoint will be used by Rubrik Cloud Cluster, or add additional constraints to the `s3_vpc_endpoint` module in this Terraform.
+
+### Cloud Cluster ES now the default configuration
+
+With the 1.0 release of this Terraform module, Cloud Cluster ES is now the default configuration. As a result care should be taken to set the correct variables if classic Cloud Cluster is desired.
+
+ ### Deploying Cloud Cluster from the AWS Marketplace requires subscription
+
+The Rubik product in the AWS Marketplace must be subscribed to. Otherwise an error like this will be displayed:
+> Error: creating EC2 Instance: OptInRequired: In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=<sku_number>
+
+If this occurs, open the specific link from the error, while logged into the AWS account where Cloud Cluster will be deployed. Follow the instructions for subscribing to the product.
+
+### Variable name changes
+
+Several variables have changed with this iteration of the script. Upgrades to existing deployments may cause unwanted changes.  Be sure to check the changes of `terraform plan` before `terraform apply` to avoid disruptive behavior. 
