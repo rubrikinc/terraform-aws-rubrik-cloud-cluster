@@ -39,6 +39,7 @@ resource "aws_instance" "rubrik_cluster" {
   iam_instance_profile    = var.node_config.iam_instance_profile
   root_block_device {
     encrypted = true
+    tags = {Name = "${each.value}-sda"}
   }
 
 }

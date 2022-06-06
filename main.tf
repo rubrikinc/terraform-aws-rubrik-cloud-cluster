@@ -84,13 +84,8 @@ module "s3_vpc_endpoint" {
 
   create = var.create_s3_vpc_endpoint
   vpc_id = data.aws_subnet.rubrik_cloud_cluster.vpc_id
-  #route_table_ids = [data.aws_vpc.rubrik_cloud_cluster.main_route_table_id]
-  #endpoint_name = (var.s3_vpc_endpoint_name == "" ? "${local.cluster_name}.vpc-ep" : var.s3_vpc_endpoint_name)
-  tags = merge(
-    var.aws_tags
-  )
+  tags = var.aws_tags
 }
-
 
 ######################################################################
 # Create, then configure, the Security Groups for the Rubrik Cluster #
@@ -104,7 +99,7 @@ module "rubrik_nodes_sg" {
   vpc_id          = data.aws_subnet.rubrik_cloud_cluster.vpc_id
   create          = var.create_aws_rubrik_hosts_sg
   tags = merge(
-    { name = "${local.cluster_tag}:sg" },
+    { name = "${var.cluster_name}:sg" },
     var.aws_tags
   )
 }
@@ -115,7 +110,7 @@ module "rubrik_nodes_sg_rules" {
   rubrik_hosts_sg_id = module.rubrik_hosts_sg.security_group_id
   create             = var.create_aws_rubrik_hosts_sg
   tags = merge(
-    { name = "${local.cluster_tag}:sg-rule" },
+    { name = "${var.cluster_name}:sg-rule" },
     var.aws_tags
   )
   depends_on = [
@@ -132,7 +127,7 @@ module "rubrik_hosts_sg" {
   vpc_id          = data.aws_subnet.rubrik_cloud_cluster.vpc_id
   create          = var.create_aws_rubrik_hosts_sg
   tags = merge(
-    { name = "${local.cluster_tag}:sg" },
+    { name = "${var.cluster_name}:sg" },
     var.aws_tags
   )
 }
@@ -144,7 +139,7 @@ module "rubrik_hosts_sg_rules" {
   rubrik_nodes_sg_id = module.rubrik_nodes_sg.security_group_id
   create             = var.create_aws_rubrik_hosts_sg
   tags = merge(
-    { name = "${local.cluster_tag}:sg-rule" },
+    { name = "${var.cluster_name}:sg-rule" },
     var.aws_tags
   )
   depends_on = [

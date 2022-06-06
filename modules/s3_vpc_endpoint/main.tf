@@ -17,9 +17,7 @@ module "endpoints" {
     }
   }
 
-  tags = merge(
-    var.tags,
-  )
+  tags = var.tags
 }
 
 data "aws_vpc_endpoint" "this" {
