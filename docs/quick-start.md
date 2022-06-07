@@ -230,14 +230,6 @@ aws ec2 describe-images \
 
 There are a few known issues when using this Terraform module. These are described below.
 
-### Multiple existing S3 endpoints
-
-If there is already an S3 endpoint defined setting the variable `create_s3_vpc_endpoint` to `true` may cause the following error:
-
-> Error: multiple VPC Endpoints matched; use additional constraints to reduce matches to a single VPC Endpoint
-
-If this happens set teh `create_s3_vpc_endpoint` variable to `false`. Verify that the current VPC endpoint will be used by Rubrik Cloud Cluster, or add additional constraints to the `s3_vpc_endpoint` module in this Terraform.
-
 ### Cloud Cluster ES now the default configuration
 
 With the 1.0 release of this Terraform module, Cloud Cluster ES is now the default configuration. As a result care should be taken to set the correct variables if classic Cloud Cluster is desired.

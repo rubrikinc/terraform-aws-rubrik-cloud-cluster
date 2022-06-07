@@ -85,7 +85,11 @@ module "s3_vpc_endpoint" {
 
   create = var.create_s3_vpc_endpoint
   vpc_id = data.aws_subnet.rubrik_cloud_cluster.vpc_id
-  tags = var.aws_tags
+  
+  tags =  merge(
+    { Name = "${var.cluster_name}:ep" },
+    var.aws_tags
+  )
 }
 
 ######################################################################
