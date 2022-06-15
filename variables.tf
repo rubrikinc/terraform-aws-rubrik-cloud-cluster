@@ -25,7 +25,7 @@ variable "number_of_nodes" {
 }
 
 variable "aws_ami_owners" {
-  description = "AWS marketplace account(s) that owns the Rubrik Cloud Cluster AMIs."
+  description = "AWS marketplace account(s) that owns the Rubrik Cloud Cluster AMIs. Use [\"345084742485\"] for AWS GovCloud."
   type        = set(string)
   default     = ["679593333241"]
 }

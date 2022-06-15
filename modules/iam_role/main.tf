@@ -1,10 +1,3 @@
-data "template_file" "aws_iam_role_policy" {
-  template = file("cc_es_policy.json.tpl")
-  vars = {
-    resource = var.bucket
-  }
-}
-
 resource "aws_iam_role" "rubrik_ec2_s3" {
   count = var.create ? 1 : 0
 
@@ -30,7 +23,30 @@ resource "aws_iam_role_policy" "rubrik_ec2_s3_policy" {
   count  = var.create ? 1 : 0
   name   = var.role_policy_name
   role   = aws_iam_role.rubrik_ec2_s3[0].name
-  policy = data.template_file.aws_iam_role_policy.rendered
+  policy = jsonencode ({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:DeleteObject*",
+                "s3:GetObject*",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject*"
+            ],
+            "Resource": "${var.bucket.s3_bucket_arn}/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucket*",
+                "s3:ListBucket*"
+        ],
+            "Resource": "${var.bucket.s3_bucket_arn}"
+        }
+    ]
+  })
 }
 
 resource "aws_iam_instance_profile" "rubrik_ec2_s3_profile" {

@@ -1,5 +1,5 @@
 variable "bucket" {
-  type = string
+  type = map(any)
 }
 
 variable "create" {
