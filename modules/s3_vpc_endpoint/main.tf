@@ -1,29 +1,22 @@
+locals {
+  get_endpoint_data = var.create == true ? 1 : 0
+}
 data "aws_region" "current" {}
 
-module "endpoints" {
-  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-
-  vpc_id             = var.vpc_id
-  create             = var.create
-
-  endpoints = {
-    s3 = {
-      # gateway endpoint
-      service = "s3"
-      tags    = var.tags
-      route_table_ids    = var.route_table_ids
-      service_type = "Gateway"
-
-    }
-  }
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  count             = local.get_endpoint_data
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${data.aws_region.current.id}.s3"
+  vpc_endpoint_type = "Gateway"
 
   tags = var.tags
 }
 
 data "aws_vpc_endpoint" "this" {
+  count        = local.get_endpoint_data
   vpc_id       = var.vpc_id
-  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+  id           = aws_vpc_endpoint.s3_endpoint[0].id
   depends_on = [
-    module.endpoints
+    aws_vpc_endpoint.s3_endpoint
   ]
 }
