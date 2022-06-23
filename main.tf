@@ -171,7 +171,7 @@ module "s3_bucket" {
 module "iam_role" {
   source = "./modules/iam_role"
 
-  bucket                = module.s3_bucket.s3_bucket_id
+  bucket                = module.s3_bucket
   create                = var.create_iam_role
   role_name             = var.aws_cloud_cluster_iam_role_name == "" ? "${var.cluster_name}.role" : var.aws_cloud_cluster_iam_role_name
   role_policy_name      = var.aws_cloud_cluster_iam_role_policy_name == "" ? "${var.cluster_name}.role-policy" : var.aws_cloud_cluster_iam_role_policy_name
