@@ -65,15 +65,16 @@ data "aws_ami_ids" "rubrik_cloud_cluster" {
 ##############################
 
 module "aws_key_pair" {
-  source = "terraform-aws-modules/key-pair/aws"
+  source          = "terraform-aws-modules/key-pair/aws"
+  version         = "~> 2.0.0"
 
   key_name        = var.aws_key_pair_name == "" ? "${var.cluster_name}.key-pair" : var.aws_key_pair_name
   public_key      = var.aws_public_key == "" ? tls_private_key.cc-key[0].public_key_openssh : var.aws_public_key
-  create_key_pair = var.create_key_pair
+  create          = var.create_key_pair
 }
 
 locals {
-  aws_key_pair_name = var.aws_key_pair_name == "" ? module.aws_key_pair.key_pair_key_name : var.aws_key_pair_name
+  aws_key_pair_name = var.aws_key_pair_name == "" ? module.aws_key_pair.key_pair_name : var.aws_key_pair_name
 }
 
 ########################################
