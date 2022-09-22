@@ -65,7 +65,8 @@ data "aws_ami_ids" "rubrik_cloud_cluster" {
 ##############################
 
 module "aws_key_pair" {
-  source = "terraform-aws-modules/key-pair/aws"
+  source          = "terraform-aws-modules/key-pair/aws"
+  version         = "~> 2.0.0"
 
   key_name        = var.aws_key_pair_name == "" ? "${var.cluster_name}.key-pair" : var.aws_key_pair_name
   public_key      = var.aws_public_key == "" ? tls_private_key.cc-key[0].public_key_openssh : var.aws_public_key
