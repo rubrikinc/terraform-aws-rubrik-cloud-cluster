@@ -23,7 +23,7 @@ module "rubrik_aws_cloud_cluster" {
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
   dns_search_domain          = ["rubrikdemo.com"]
-  dns_name_servers           = ["10.142.9.3"]
+  dns_name_servers           = ["192.168.100.5"."192.168.100.6"]
 }
 ```
 
