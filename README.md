@@ -22,8 +22,11 @@ module "rubrik_aws_cloud_cluster" {
   aws_ami_filter             = ["rubrik-mp-cc-7*"]
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
+  admin_password              = "RubrikGoForward"
   dns_search_domain          = ["rubrikdemo.com"]
   dns_name_servers           = ["192.168.100.5"."192.168.100.6"]
+  ntp_server1_name            = "8.8.8.8"
+  ntp_server2_name            = "8.8.4.4"
 }
 ```
 
@@ -101,7 +104,14 @@ The following are the variables accepted by the module.
 | admin_password                                  | Password for the Rubrik Cloud Cluster admin account.                                                                     | string |      RubrikGoForward       |    no    |
 | dns_search_domain                               | List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified.                  |  list  |                            |   yes    |
 | dns_name_servers                                | List of the IPv4 addresses of the DNS servers.                                                                           |  list  |    ["169.254.169.253"]     |    no    |
-| ntp_servers                                     | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                                |  list  |    ["169.254.169.123"]     |    no    |
+| ntp_server1_name                                | The FQDN or IPv4 addresses of network time protocol (NTP) server #1.                                                     | string |          8.8.8.8           |   yes    |
+| ntp_server1_key_id                              | The ID # of the key for NTP server #1. Typically is set to 0. (Required with `ntp_server1_key` & `ntp_server1_key_type`) |  int   |             0              |    no    |
+| ntp_server1_key                                 | Symmetric key material for NTP server #1. (Required with `ntp_server1_key_id` and `ntp_server1_key_type`)                | string |                            |    no    |
+| ntp_server1_key_type                            | Symmetric key type for NTP server #1. (Required with `ntp_server1_key` and `ntp_server1_key_id`)                         | string |                            |    no    |
+| ntp_server2_name                                | The FQDN or IPv4 addresses of network time protocol (NTP) server #2.                                                     | string |          8.8.4.4           |   yes    |
+| ntp_server2_key_id                              | The ID # of the key for NTP server #2. Typically is set to 1. (Required with `ntp_server1_key` & `ntp_server1_key_type`) |  int   |             1              |    no    |
+| ntp_server2_key                                 | Symmetric key material for NTP server #2. (Required with `ntp_server1_key_id` and `ntp_server1_key_type`)                | string |                            |    no    |
+| ntp_server2_key_type                            | Symmetric key type for NTP server #2. (Required with `ntp_server1_key` and `ntp_server1_key_id`)                         | string |                            |    no    |
 | timeout                                         | The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error.             |  int   |             15             |    no    |
 
 ## Prerequisites

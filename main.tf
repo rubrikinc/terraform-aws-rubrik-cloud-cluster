@@ -198,12 +198,23 @@ module "iam_role" {
   instance_profile_name = var.aws_cloud_cluster_ec2_instance_profile_name == "" ? "${var.cluster_name}.instance-profile" : var.aws_cloud_cluster_ec2_instance_profile_name
 }
 
-###############################
-# Create EC2 Instances in AWS #
-###############################
+resource "rubrik_bootstrap" "bootstrap_rubrik" {
+  cluster_name            = "${var.cluster_name}"
+  admin_email             = "${var.admin_email}"
+  admin_password          = "${var.admin_password}"
+  management_gateway      = "${cidrhost(data.aws_subnet.rubrik_cloud_cluster.cidr_block, 1)}"
+  management_subnet_mask  = "${cidrnetmask(data.aws_subnet.rubrik_cloud_cluster.cidr_block)}"
+  dns_search_domain       = "${var.dns_search_domain}"
+  dns_name_servers        = "${var.dns_name_servers}"
+  ntp_server1_name        = "${var.ntp_server1_name}"
+  ntp_server2_name        = "${var.ntp_server2_name}"
 
-module "cluster_nodes" {
-  source = "./modules/rubrik_aws_instances"
+  enable_encryption       = false
+
+  node_config = "${zipmap(local.cluster_node_names, local.cluster_node_ips)}"
+  timeout     = "${var.timeout}"
+
+  depends_on = [time_sleep.wait_for_nodes_to_boot]
 
   node_names  = local.cluster_node_names
   node_config = local.cluster_node_config
