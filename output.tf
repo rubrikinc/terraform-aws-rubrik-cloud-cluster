@@ -1,4 +1,4 @@
-output "rubrik_cloud_cluster_ip_addrs" {
+output "rubrik_cloud_cluster_ip_addresses" {
   value = local.cluster_node_ips
 }
 

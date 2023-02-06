@@ -10,7 +10,6 @@ variable "node_config" {
     subnet_id = string
     key_pair_name = string
     disable_api_termination = bool
-    iam_instance_profile = string
     availability_zone = string
     tags = map(string)
   })

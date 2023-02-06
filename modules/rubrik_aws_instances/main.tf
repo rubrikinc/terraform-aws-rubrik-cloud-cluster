@@ -26,7 +26,6 @@ resource "aws_instance" "rubrik_cluster" {
   )
 
   disable_api_termination = var.node_config.disable_api_termination
-  iam_instance_profile    = var.node_config.iam_instance_profile
   root_block_device {
     encrypted = true
     tags = {Name = "${each.value}-sda"}
