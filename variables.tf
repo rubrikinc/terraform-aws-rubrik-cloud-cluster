@@ -41,27 +41,15 @@ variable "aws_image_id" {
   default     = "latest"
 }
 
-variable "create_key_pair" {
-  description = "If true, a new AWS SSH Key-Pair will be created using the aws_key_pair_name and aws_public_key settings."
-  type        = bool
-  default     = true
-}
-
 variable "aws_key_pair_name" {
   description = "Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used."
   type        = string
   default     = ""
 }
 
-variable "aws_public_key" {
-  description = "The public key material needed to create an AWS Key-Pair for use with Rubrik Cloud Cluster. "
-  sensitive   = true
-  default     = "" 
-}
-variable "private-key-file" {
-  description = "If a new AWS SSH Key-Pair is generated, the name of the file to save the private key material in."
-  type        = string
-  default     = "./.terraform/cc-key.pem"
+variable "private_key_recovery_window_in_days" {
+  description = "Recovery window in days to recover script generated ssh private key."
+  default     = 30
 }
 
 # Network Settings

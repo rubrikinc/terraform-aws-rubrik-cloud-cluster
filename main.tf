@@ -64,6 +64,25 @@ data "aws_ami_ids" "rubrik_cloud_cluster" {
 # SSH KEY PAIR FOR INSTANCES #
 ##############################
 
+# Create RSA key of size 4096 bits
+resource "tls_private_key" "cc-key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Store private key in AWS Secrets Manager
+resource "aws_secretsmanager_secret" "cces-private-key" {
+  name                    = "${var.cluster_name}-private-key"
+  recovery_window_in_days = var.private_key_recovery_window_in_days
+
+  tags = var.aws_tags
+}
+resource "aws_secretsmanager_secret_version" "cces-private-key-value" {
+  secret_id     = aws_secretsmanager_secret.cces-private-key.id
+  secret_string = tls_private_key.cc-key.private_key_pem
+}
+
+# Optionally create SSH Key
 module "aws_key_pair" {
   source          = "terraform-aws-modules/key-pair/aws"
   version         = "~> 2.0.0"

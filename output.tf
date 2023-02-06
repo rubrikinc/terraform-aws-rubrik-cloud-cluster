@@ -6,10 +6,10 @@ output "rubrik_hosts_sg_id" {
   value = module.rubrik_hosts_sg.security_group_id
 }
 
-output "s3_bucket" {
-  value = module.s3_bucket.s3_bucket_id
+output "secrets_manager_private_key_name" {
+  value = "${var.cluster_name}-private-key"
 }
 
-output "private_key_file" {
-  value = var.create_key_pair ? var.private-key-file : null
+output "secrets_manager_get_ssh_key_command" {
+  value = "aws secretsmanager get-secret-value --region ${var.aws_region} --secret-id ${var.cluster_name}-private-key --query SecretString --output text"
 }

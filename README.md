@@ -46,7 +46,7 @@ The following are the variables accepted by the module.
 | create_key_pair                                 | If true, a new AWS SSH Key-Pair will be created using the aws_key_pair_name and aws_public_key settings.                 |  bool  |            true            |    no    |
 | aws_key_pair_name                               | Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used.                                 | string |                            |    no    |
 | aws_public_key                                  | The public key material needed to create an AWS Key-Pair for use with Rubrik Cloud Cluster.                              | string |                            |    no    |
-| private-key-file                                | If a new AWS SSH Key-Pair is generated, the name of the file to save the private key material in.                        | string |  ./.terraform/cc-key.pem   |    no    |
+| private_key_recovery_window_in_days             | Recovery window in days to recover script generated ssh private key.                                                     | string |             30             |    no    |
 
 *Note: When using the `aws_tags` variable, the "Name" tag is automatically used by this TF for those resources that support it.*
 
