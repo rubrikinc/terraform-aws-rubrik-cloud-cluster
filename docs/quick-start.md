@@ -260,14 +260,3 @@ For AWS GovCloud the link points to the public marketplace. Instead of following
 ### Variable name changes
 
 Several variables have changed with this iteration of the script. Upgrades to existing deployments may cause unwanted changes.  Be sure to check the changes of `terraform plan` before `terraform apply` to avoid disruptive behavior. 
-
-### Instance Metadata Service Version 2 (IMDSv2) not supported
-
-The AWS Instance Metadata Service Version 2 (IMDSv2) is not supported at this time with CCES. If after deploying the CCES node, SSH fails to login or bootstrapping the node fails. When trying to ssh to the node the following error may occur:
-
-```
-admin@<node_ip_address>: Permission denied (publickey).
-```
-
-If this error occurs, the Instance Metadata Service Version 2 (IMDSv2) may be enabled. This can happen if the Terraform `aws_instance` module has the `metadata_options` variable `http_tokens` set to `required`. To fix this set remove the `http_tokens` variable.
-
