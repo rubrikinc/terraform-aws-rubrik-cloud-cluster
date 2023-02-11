@@ -15,11 +15,11 @@ module "rubrik_aws_cloud_cluster" {
   aws_ami_filter             = ["rubrik-mp-cc-7*"]
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
-  admin_password              = "RubrikGoForward"
+  admin_password             = "RubrikGoForward"
   dns_search_domain          = ["rubrikdemo.com"]
   dns_name_servers           = ["192.168.100.5","192.168.100.6"]
-  ntp_server1_name            = "8.8.8.8"
-  ntp_server2_name            = "8.8.4.4"
+  ntp_server1_name           = "8.8.8.8"
+  ntp_server2_name           = "8.8.4.4"
 }
 ```
 
