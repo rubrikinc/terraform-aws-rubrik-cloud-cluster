@@ -25,13 +25,13 @@ variable "number_of_nodes" {
 }
 
 variable "aws_ami_owners" {
-  description = "AWS marketplace account(s) that owns the Rubrik Cloud Cluster AMIs. Use [\"345084742485\"] for AWS GovCloud."
+  description = "AWS marketplace account(s) that owns the Rubrik Cloud Cluster AMIs. Use use 679593333241 for AWS Commercial and 345084742485 for AWS GovCloud."
   type        = set(string)
   default     = ["679593333241"]
 }
 
 variable "aws_ami_filter" {
-  description = "Cloud Cluster AWS AMI name pattern(s) to search for. Use [\"rubrik-mp-cc-<X>*\"]. Where <X> is the major version of CDM. Ex. [\"rubrik-mp-cc-7\"]"
+  description = "Cloud Cluster AWS AMI name pattern(s) to search for. Use 'rubrik-mp-cc-<X>*' without the single quotes. Where <X> is the major version of CDM. Ex. 'rubrik-mp-cc-7*'"
   type        = set(string)
 }
 
@@ -41,35 +41,18 @@ variable "aws_image_id" {
   default     = "latest"
 }
 
-variable "create_key_pair" {
-  description = "If true, a new AWS SSH Key-Pair will be created using the aws_key_pair_name and aws_public_key settings."
-  type        = bool
-  default     = true
-}
-
 variable "aws_key_pair_name" {
   description = "Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used."
   type        = string
   default     = ""
 }
 
-variable "aws_public_key" {
-  description = "The public key material needed to create an AWS Key-Pair for use with Rubrik Cloud Cluster. "
-  sensitive   = true
-  default     = "" 
-}
-variable "private-key-file" {
-  description = "If a new AWS SSH Key-Pair is generated, the name of the file to save the private key material in."
-  type        = string
-  default     = "./.terraform/cc-key.pem"
+variable "private_key_recovery_window_in_days" {
+  description = "Recovery window in days to recover script generated ssh private key."
+  default     = 30
 }
 
 # Network Settings
-variable "create_cloud_cluster_nodes_sg" {
-  description = "If true, creates a new Security Group for node to node traffic within the Rubrik cluster."
-  type        = bool
-  default     = true
-}
 variable "aws_vpc_cloud_cluster_nodes_sg_name" {
   description = "The name of the security group to create for Rubrik Cloud Cluster to use."
   default     = "Rubrik Cloud Cluster Nodes"
@@ -79,11 +62,6 @@ variable "cloud_cluster_nodes_admin_cidr" {
   description = "The CIDR range for the systems used to administer the Cloud Cluster via SSH and HTTPS."
   type        = string
   default     = "0.0.0.0/0"
-}
-variable "create_cloud_cluster_hosts_sg" {
-  description = "If true, creates a new Security Group for node to host traffic from the Rubrik cluster."
-  type        = bool
-  default     = true
 }
 variable "aws_vpc_cloud_cluster_hosts_sg_name" {
   description = "The name of the security group to create for Rubrik Cloud Cluster to communicate with EC2 instances."
@@ -108,57 +86,15 @@ variable "cluster_disk_type" {
 
 variable "cluster_disk_size" {
   description = "The size (in GB) of each data disk on each node. Cloud Cluster ES only requires 1 512 GB disk per node."
-  default     = "512"
+  default     = "1024"
 }
 
 variable "cluster_disk_count" {
   description = "The number of disks for each node in the cluster. Set to 1 to use with S3 storage for Cloud Cluster ES."
   type        = number
-  default     = 1
+  default     = 3
 }
 
-# Cloud Cluster ES Settings
-variable "create_iam_role" {
-  description = "If true, create required IAM role, role policy, and instance profile needed for Cloud Cluster ES."
-  type        = bool
-  default     = true
-}
-
-variable "aws_cloud_cluster_iam_role_name" {
-  description = "AWS IAM Role name for Cloud Cluster ES. If blank a name will be auto generated. Required if create_iam_role is false."
-  type        = string
-  default     = ""
-}
-
-variable "aws_cloud_cluster_iam_role_policy_name" {
-  description = "AWS IAM Role policy name for Cloud Cluster ES if create_iam_role is true. If blank a name will be auto generated."
-  type        = string
-  default     = ""
-}
-
-variable "aws_cloud_cluster_ec2_instance_profile_name" {
-  description = "AWS EC2 Instance Profile name that links the IAM Role to Cloud Cluster ES. If blank a name will be auto generated."
-  type        = string
-  default     = ""
-}
-
-variable "create_s3_bucket" {
-  description = "If true, create am S3 bucket for Cloud Cluster ES data storage."
-  type        = bool
-  default     = true
-}
-
-variable "s3_bucket_name" {
-  description = "Name of the S3 bucket to use with Cloud Cluster ES data storage. If blank a name will be auto generated."
-  type        = string
-  default     = ""
-}
-
-variable "create_s3_vpc_endpoint" {
-  description = "If true, create a VPC Endpoint and S3 Endpoint Service for Cloud Cluster ES. "
-  type        = bool
-  default     = true
-}
 
 # Bootstrap Settings
 variable "cluster_name" {
@@ -172,7 +108,7 @@ variable "admin_email" {
 
 variable "admin_password" {
   description = "Password for the Rubrik Cloud Cluster admin account."
-  default     = "RubrikGoForward"
+  default     = "ChangeMe"
 }
 
 variable "dns_search_domain" {
@@ -187,11 +123,50 @@ variable "dns_name_servers" {
   default     = ["169.254.169.253"]
 }
 
-variable "ntp_servers" {
-  description = "List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)"
-  default     = ["169.254.169.123"]
+variable "ntp_server1_name" {
+  description = "The FQDN or IPv4 addresses of network time protocol (NTP) server #1."
+  type        = string
+  default     = "8.8.8.8"
 }
-
+variable "ntp_server1_key_id" {
+  description = "The ID number of the symmetric key used with NTP server #1. (Typically this is 0)"
+  type        = number
+  default     = 0
+}
+variable "ntp_server1_key" {
+  description = "Symmetric key material for NTP server #1."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+variable "ntp_server1_key_type" {
+  description = "Symmetric key type for NTP server #1."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+variable "ntp_server2_name" {
+  description = "The FQDN or IPv4 addresses of network time protocol (NTP) server #2."
+  type        = string
+  default     = "8.8.4.4"
+}
+variable "ntp_server2_key_id" {
+  description = "The ID number of the symmetric key used with NTP server #2. (Typically this is 0)"
+  type        = number
+  default     = 0
+}
+variable "ntp_server2_key" {
+  description = "Symmetric key material for NTP server #2."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+variable "ntp_server2_key_type" {
+  description = "Symmetric key type for NTP server #2."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
 variable "timeout" {
   description = "The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error."
   default     = 15

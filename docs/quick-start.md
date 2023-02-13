@@ -15,8 +15,11 @@ module "rubrik_aws_cloud_cluster" {
   aws_ami_filter             = ["rubrik-mp-cc-7*"]
   cluster_name               = "rubrik-cloud-cluster"
   admin_email                = "build@rubrik.com"
+  admin_password             = "RubrikGoForward"
   dns_search_domain          = ["rubrikdemo.com"]
-  dns_name_servers           = ["10.142.9.3"]
+  dns_name_servers           = ["192.168.100.5","192.168.100.6"]
+  ntp_server1_name           = "8.8.8.8"
+  ntp_server2_name           = "8.8.4.4"
 }
 ```
 
@@ -38,10 +41,9 @@ The following are the variables accepted by the module.
 | aws_ami_owners                                  | AWS marketplace account(s) that owns the Rubrik Cloud Cluster AMIs. Use [\"345084742485\"] for AWS GovCloud.             |  list  |      ["679593333241"]      |    no    |
 | aws_ami_filter                                  | Cloud Cluster AWS AMI name pattern(s) to search for. Use [\"rubrik-mp-cc-<X>*\"]. Where <X> is the major version of CDM. |  list  |                            |   yes    |
 | aws_image_id                                    | AWS Image ID to deploy. Set to 'latest' or leave blank to deploy the latest version as determined by `aws_ami_filter`.   | string |           latest           |    no    |
-| create_key_pair                                 | If true, a new AWS SSH Key-Pair will be created using the aws_key_pair_name and aws_public_key settings.                 |  bool  |            true            |    no    |
 | aws_key_pair_name                               | Name for the AWS SSH Key-Pair being created or the existing AWS SSH Key-Pair being used.                                 | string |                            |    no    |
 | aws_public_key                                  | The public key material needed to create an AWS Key-Pair for use with Rubrik Cloud Cluster.                              | string |                            |    no    |
-| private-key-file                                | If a new AWS SSH Key-Pair is generated, the name of the file to save the private key material in.                        | string |  ./.terraform/cc-key.pem   |    no    |
+| private_key_recovery_window_in_days             | Recovery window in days to recover script generated ssh private key.                                                     | string |             30             |    no    |
 
 *Note: When using the `aws_tags` variable, the "Name" tag is automatically used by this TF for those resources that support it.*
 
@@ -59,10 +61,8 @@ The following are the variables accepted by the module.
 
 | Name                                            | Description                                                                                                              |  Type  |          Default           | Required |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | :----: | :------------------------: | :------: |
-| create_cloud_cluster_nodes_sg                   | If true, creates a new Security Group for node to node traffic within the Rubrik cluster.                                |  bool  |            true            |    no    |
 | aws_vpc_cloud_cluster_nodes_sg_name             | The name of the security group to create for Rubrik Cloud Cluster to use.                                                | string |    Rubrik Cloud Cluster    |    no    |
 | cloud_cluster_nodes_admin_cidr                  | The CIDR range for the systems used to administer the Cloud Cluster via SSH and HTTPS.                                   | string |         0.0.0.0/0          |    no    |
-| create_cloud_cluster_hosts_sg                   | If true, creates a new Security Group for node to host traffic from the Rubrik cluster.                                  | string |            true            |    no    |
 | aws_vpc_cloud_cluster_hosts_sg_name             | The name of the security group to create for Rubrik Cloud Cluster to communicate with EC2 instances.                     | string | Rubrik Cloud Cluster Hosts |    no    |
 | aws_cloud_cluster_nodes_sg_ids                  | Additional security groups to add to Rubrik cluster nodes.                                                               | string |                            |    no    |
 | aws_subnet_id                                   | The VPC Subnet ID to launch Rubrik Cloud Cluster in.                                                                     | string |                            |   yes    |
@@ -75,18 +75,6 @@ The following are the variables accepted by the module.
 | cluster_disk_size                               | The size (in GB) of each data disk on each node. Cloud Cluster ES only requires 1 512 GB disk per node.                  | string |            512             |    no    |
 | cluster_disk_count                              | The number of disks for each node in the cluster. Set to 1 to use with S3 storage for Cloud Cluster ES.                  |  int   |             1              |    no    |
 
-### Cloud Cluster ES Settings
-
-| Name                                            | Description                                                                                                              |  Type  |          Default           | Required |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | :----: | :------------------------: | :------: |
-| create_iam_role                                 | If true, create required IAM role, role policy, and instance profile needed for Cloud Cluster ES.                        |  bool  |           true             |    no    |
-| aws_cloud_cluster_iam_role_name                 | AWS IAM Role name for Cloud Cluster ES. If blank a name will be auto generated. Required if create_iam_role is false.    | string |                            |    no    |
-| aws_cloud_cluster_iam_role_policy_name          | AWS IAM Role policy name for Cloud Cluster ES if create_iam_role is true. If blank a name will be auto generated.        | string |                            |    no    |
-| aws_cloud_cluster_ec2_instance_profile_name     | AWS EC2 Instance Profile name that links the IAM Role to Cloud Cluster ES. If blank a name will be auto generated.       | string |                            |    no    |
-| create_s3_bucket                                | If true, create am S3 bucket for Cloud Cluster ES data storage.                                                          |  bool  |           true             |    no    |
-| s3_bucket_name                                  | Name of the S3 bucket to use with Cloud Cluster ES data storage. If blank a name will be auto generated.                 | string |                            |    no    |
-| create_s3_vpc_endpoint                          | If true, create a VPC Endpoint and S3 Endpoint Service for Cloud Cluster ES.                                             |  bool  |           true             |    no    |
-
 ### Bootstrap Settings
 
 | Name                                            | Description                                                                                                              |  Type  |          Default           | Required |
@@ -96,7 +84,14 @@ The following are the variables accepted by the module.
 | admin_password                                  | Password for the Rubrik Cloud Cluster admin account.                                                                     | string |      RubrikGoForward       |    no    |
 | dns_search_domain                               | List of search domains that the DNS Service will use to resolve hostnames that are not fully qualified.                  |  list  |                            |   yes    |
 | dns_name_servers                                | List of the IPv4 addresses of the DNS servers.                                                                           |  list  |    ["169.254.169.253"]     |    no    |
-| ntp_servers                                     | List of FQDN or IPv4 addresses of a network time protocol (NTP) server(s)                                                |  list  |    ["169.254.169.123"]     |    no    |
+| ntp_server1_name                                | The FQDN or IPv4 addresses of network time protocol (NTP) server #1.                                                     | string |          8.8.8.8           |   yes    |
+| ntp_server1_key_id                              | The ID # of the key for NTP server #1. Typically is set to 0. (Required with `ntp_server1_key` & `ntp_server1_key_type`) |  int   |             0              |    no    |
+| ntp_server1_key                                 | Symmetric key material for NTP server #1. (Required with `ntp_server1_key_id` and `ntp_server1_key_type`)                | string |                            |    no    |
+| ntp_server1_key_type                            | Symmetric key type for NTP server #1. (Required with `ntp_server1_key` and `ntp_server1_key_id`)                         | string |                            |    no    |
+| ntp_server2_name                                | The FQDN or IPv4 addresses of network time protocol (NTP) server #2.                                                     | string |          8.8.4.4           |   yes    |
+| ntp_server2_key_id                              | The ID # of the key for NTP server #2. Typically is set to 1. (Required with `ntp_server1_key` & `ntp_server1_key_type`) |  int   |             1              |    no    |
+| ntp_server2_key                                 | Symmetric key material for NTP server #2. (Required with `ntp_server1_key_id` and `ntp_server1_key_type`)                | string |                            |    no    |
+| ntp_server2_key_type                            | Symmetric key type for NTP server #2. (Required with `ntp_server1_key` and `ntp_server1_key_id`)                         | string |                            |    no    |
 | timeout                                         | The number of seconds to wait to establish a connection the Rubrik cluster before returning a timeout error.             |  int   |             15             |    no    |
 
 ## Running the Terraform Configuration
@@ -134,11 +129,6 @@ Downloading registry.terraform.io/terraform-aws-modules/security-group/aws 4.9.0
 - rubrik_nodes_sg_rules in modules/rubrik_nodes_sg
 Downloading registry.terraform.io/terraform-aws-modules/security-group/aws 4.9.0 for rubrik_nodes_sg_rules.this...
 - rubrik_nodes_sg_rules.this in .terraform/modules/rubrik_nodes_sg_rules.this
-Downloading registry.terraform.io/terraform-aws-modules/s3-bucket/aws 3.2.3 for s3_bucket...
-- s3_bucket in .terraform/modules/s3_bucket
-- s3_vpc_endpoint in modules/s3_vpc_endpoint
-Downloading registry.terraform.io/terraform-aws-modules/vpc/aws 3.14.0 for s3_vpc_endpoint.endpoints...
-- s3_vpc_endpoint.endpoints in .terraform/modules/s3_vpc_endpoint.endpoints/modules/vpc-endpoints
 
 Initializing the backend...
 
@@ -270,3 +260,13 @@ For AWS GovCloud the link points to the public marketplace. Instead of following
 ### Variable name changes
 
 Several variables have changed with this iteration of the script. Upgrades to existing deployments may cause unwanted changes.  Be sure to check the changes of `terraform plan` before `terraform apply` to avoid disruptive behavior. 
+
+### Instance Metadata Service Version 2 (IMDSv2) not supported
+
+The AWS Instance Metadata Service Version 2 (IMDSv2) is not supported at this time with Cloud Cluster. If after deploying the Cloud Cluster node, SSH fails to login. When trying to ssh to the node the following error may occur:
+
+```
+admin@<node_ip_address>: Permission denied (publickey).
+```
+
+If this error occurs, the Instance Metadata Service Version 2 (IMDSv2) may be enabled. This can happen if the Terraform `aws_instance` module has the `metadata_options` variable `http_tokens` set to `required`.  To fix this remove the `http_tokens` variable.
